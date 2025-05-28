@@ -138,7 +138,7 @@ const ArticleDetail = () => {
 
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-700">
               <div className="text-sm text-gray-400">
-                Source: <span className="text-green-400">{article.source}</span>
+                Source: <span className="text-green-400">News Source</span>
               </div>
               <Button
                 onClick={handleShare}

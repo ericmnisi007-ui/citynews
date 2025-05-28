@@ -5,10 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Users, Building, Zap, Trophy, Globe, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { NewsService } from "@/services/newsService";
 
 const CategorySection = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const categories = [
     {
@@ -84,101 +86,8 @@ const CategorySection = () => {
     loadCategoryCounts();
   }, []);
 
-  const handleCategoryClick = async (categoryName: string) => {
-    try {
-      toast({
-        title: `Loading ${categoryName}`,
-        description: `Fetching ${categoryName} articles...`,
-      });
-
-      const articles = await NewsService.getArticlesByCategory(categoryName);
-      
-      if (articles.length === 0) {
-        toast({
-          title: `No ${categoryName} Articles`,
-          description: `No articles found in the ${categoryName} category at the moment.`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Create a category view window
-      const categoryWindow = window.open('', '_blank', 'width=1200,height=800,scrollbars=yes');
-      if (categoryWindow) {
-        const articlesHtml = articles.map(article => `
-          <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px; cursor: pointer;" onclick="window.open('${article.url}', '_blank')">
-            <div style="display: flex; gap: 20px;">
-              <img src="${article.imageUrl}" alt="${article.title}" style="width: 200px; height: 120px; object-fit: cover; border-radius: 6px; flex-shrink: 0;" />
-              <div style="flex: 1;">
-                <h3 style="margin: 0 0 10px 0; font-size: 20px; font-weight: bold; color: #1f2937;">${article.title}</h3>
-                <p style="margin: 0 0 10px 0; color: #6b7280; line-height: 1.5;">${article.description}</p>
-                <div style="display: flex; align-items: center; gap: 15px; font-size: 14px; color: #9ca3af;">
-                  <span>${article.source}</span>
-                  <span>${NewsService.formatTimeAgo(article.publishedAt)}</span>
-                  <span>${NewsService.formatViews(article.views)} views</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        `).join('');
-
-        categoryWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>${categoryName} - ZA News Hub</title>
-            <style>
-              body { 
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-                max-width: 1000px; 
-                margin: 0 auto; 
-                padding: 20px;
-                background: #f9fafb;
-              }
-              .header { 
-                background: linear-gradient(135deg, #22c55e, #16a34a);
-                color: white; 
-                padding: 30px; 
-                border-radius: 12px; 
-                margin-bottom: 30px; 
-                text-align: center;
-              }
-              .header h1 { margin: 0; font-size: 32px; }
-              .header p { margin: 10px 0 0 0; opacity: 0.9; }
-              .count { 
-                background: rgba(255,255,255,0.2); 
-                padding: 8px 16px; 
-                border-radius: 20px; 
-                display: inline-block; 
-                margin-top: 15px;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>${categoryName} News</h1>
-              <p>Latest ${categoryName.toLowerCase()} stories from South Africa</p>
-              <div class="count">${articles.length} articles available</div>
-            </div>
-            ${articlesHtml}
-          </body>
-          </html>
-        `);
-        categoryWindow.document.close();
-      }
-
-      toast({
-        title: `${categoryName} Loaded`,
-        description: `Found ${articles.length} ${categoryName.toLowerCase()} articles`,
-      });
-    } catch (error) {
-      console.error('Error loading category articles:', error);
-      toast({
-        title: "Error",
-        description: `Failed to load ${categoryName} articles. Please try again.`,
-        variant: "destructive",
-      });
-    }
+  const handleCategoryClick = (categoryName: string) => {
+    navigate(`/category/${categoryName.toLowerCase()}`);
   };
 
   return (

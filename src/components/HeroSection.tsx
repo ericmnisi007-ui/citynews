@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 import HeroStoryCard from "./HeroStoryCard";
 import StoryNavigationDots from "./StoryNavigationDots";
-import QuickStats from "./QuickStats";
 import { heroStories } from "@/data/heroData";
 
 const HeroSection = () => {
@@ -31,10 +30,10 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* Live News Indicator */}
-        <div className="text-center mb-16 animate-slide-up">
-          <div className="inline-flex items-center px-6 py-3 rounded-full glass-effect border border-green-400/30 mb-8 animate-float">
+        <div className="text-center mb-8 animate-slide-up">
+          <div className="inline-flex items-center px-6 py-3 rounded-full glass-effect border border-green-400/30 animate-float">
             <div className="flex items-center">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-3"></div>
               <TrendingUp className="h-5 w-5 text-green-400 mr-2" />
@@ -52,9 +51,6 @@ const HeroSection = () => {
             onSlideChange={setCurrentSlide}
           />
         </div>
-
-        {/* Quick Stats */}
-        <QuickStats />
       </div>
     </section>
   );

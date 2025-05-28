@@ -3,8 +3,9 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Clock, Eye, TrendingUp } from "lucide-react";
+import { ExternalLink, Clock, Eye, TrendingUp, Share2 } from "lucide-react";
 import { NewsArticle } from "@/services/newsService";
+import { useToast } from "@/hooks/use-toast";
 
 interface ArticleCardProps {
   article: NewsArticle;
@@ -13,6 +14,8 @@ interface ArticleCardProps {
 }
 
 const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
+  const { toast } = useToast();
+
   const getCategoryColor = (category: string) => {
     const colors = {
       Business: "from-blue-500 to-blue-600",
@@ -42,6 +45,23 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
     return views.toString();
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.description,
+        url: `${window.location.origin}/article/${article.id}`,
+      });
+    } else {
+      navigator.clipboard.writeText(`${window.location.origin}/article/${article.id}`);
+      toast({
+        title: "Link Copied",
+        description: "Article link copied to clipboard",
+      });
+    }
+  };
+
   return (
     <Card 
       className={`glass-effect border border-green-400/20 overflow-hidden hover-lift group animate-slide-up stagger-${index + 1} cursor-pointer`}
@@ -64,6 +84,16 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
               Trending
             </Badge>
           )}
+        </div>
+        <div className="absolute top-4 right-4">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleShare}
+            className="bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm"
+          >
+            <Share2 className="h-3 w-3" />
+          </Button>
         </div>
       </div>
       
@@ -91,7 +121,7 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
         
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-green-400 bg-green-400/10 px-2 py-1 rounded-full">
-            {article.source}
+            News Source
           </span>
           <Button 
             size="sm" 

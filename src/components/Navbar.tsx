@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Globe, Zap } from "lucide-react";
+import { Menu, Search, Globe, Zap, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +32,10 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const handleAdminClick = () => {
+    navigate('/admin');
+  };
+
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
       isScrolled 
@@ -52,7 +56,7 @@ const Navbar = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent text-glow">
-                ZA News Hub
+                City News ZA
               </h1>
               <p className="text-xs text-gray-400 font-medium">South African Headlines</p>
             </div>
@@ -72,7 +76,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Search and Mobile Menu */}
+          {/* Search, Admin and Mobile Menu */}
           <div className="flex items-center space-x-4 animate-slide-in-right">
             <Button 
               variant="outline" 
@@ -82,6 +86,16 @@ const Navbar = () => {
             >
               <Search className="h-4 w-4 mr-2" />
               Search
+            </Button>
+
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleAdminClick}
+              className="hidden sm:flex glass-effect border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300"
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              Admin
             </Button>
             
             {/* Mobile Menu */}
@@ -103,6 +117,14 @@ const Navbar = () => {
                       {category}
                     </Button>
                   ))}
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleAdminClick}
+                    className="justify-start text-gray-300 hover:text-green-400 hover:bg-green-400/10"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Admin
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
