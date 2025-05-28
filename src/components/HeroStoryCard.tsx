@@ -34,11 +34,12 @@ const HeroStoryCard = ({ story }: HeroStoryCardProps) => {
             alt={story.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-900/20 to-slate-900/90 md:to-slate-900"></div>
+          {/* Enhanced gradient overlay for better text visibility */}
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60 md:to-slate-900/95"></div>
           
           {/* Breaking News Badge */}
           {story.isBreaking && (
-            <div className="absolute top-6 left-6 animate-pulse">
+            <div className="absolute top-6 left-6 animate-pulse z-10">
               <Badge className="bg-red-500 text-white font-bold px-4 py-2 text-sm border-0">
                 <div className="w-2 h-2 bg-white rounded-full animate-ping mr-2"></div>
                 BREAKING NEWS
@@ -48,8 +49,11 @@ const HeroStoryCard = ({ story }: HeroStoryCardProps) => {
         </div>
 
         {/* Story Content */}
-        <div className="absolute inset-0 md:left-3/5 p-8 md:p-12 flex flex-col justify-center bg-gradient-to-t from-slate-900/95 via-slate-900/80 to-transparent md:from-transparent md:via-transparent md:to-transparent">
-          <div className="space-y-6">
+        <div className="absolute inset-0 md:left-3/5 p-8 md:p-12 flex flex-col justify-center">
+          {/* Dark background overlay for better text visibility */}
+          <div className="absolute inset-0 bg-slate-900/90 md:bg-transparent"></div>
+          
+          <div className="space-y-6 relative z-10">
             {/* Meta Info */}
             <div className="flex items-center gap-6 text-sm">
               <Badge className={`${
@@ -59,23 +63,23 @@ const HeroStoryCard = ({ story }: HeroStoryCardProps) => {
               } text-white border-0 px-3 py-1`}>
                 {story.category}
               </Badge>
-              <div className="flex items-center text-gray-400">
+              <div className="flex items-center text-gray-300">
                 <Clock className="h-4 w-4 mr-1" />
                 {story.timeAgo}
               </div>
-              <div className="flex items-center text-gray-400">
+              <div className="flex items-center text-gray-300">
                 <Eye className="h-4 w-4 mr-1" />
                 {story.views}
               </div>
             </div>
 
-            {/* Title */}
-            <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight group-hover:text-green-400 transition-colors duration-300">
+            {/* Title with text shadow for better visibility */}
+            <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight group-hover:text-green-400 transition-colors duration-300 drop-shadow-lg text-shadow-lg">
               {story.title}
             </h2>
 
-            {/* Summary */}
-            <p className="text-lg text-gray-300 leading-relaxed max-w-xl">
+            {/* Summary with improved contrast */}
+            <p className="text-lg text-gray-200 leading-relaxed max-w-xl drop-shadow-md">
               {story.summary}
             </p>
 
@@ -89,7 +93,7 @@ const HeroStoryCard = ({ story }: HeroStoryCardProps) => {
                 Read Full Story
               </Button>
               
-              <div className="text-sm font-medium text-green-400 bg-green-400/10 px-4 py-2 rounded-full border border-green-400/30">
+              <div className="text-sm font-medium text-green-400 bg-green-400/20 px-4 py-2 rounded-full border border-green-400/40">
                 {story.source}
               </div>
             </div>

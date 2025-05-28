@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Save } from "lucide-react";
+import { Plus, Edit, Trash2, Save, Upload, Image as ImageIcon } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +14,7 @@ const AdminDashboard = () => {
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -38,6 +38,32 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: "File too large",
+          description: "Please select an image under 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setUploadedImage(result);
+        setFormData(prev => ({ ...prev, imageUrl: result }));
+        toast({
+          title: "Image uploaded",
+          description: "Feature image has been uploaded successfully",
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -57,7 +83,7 @@ const AdminDashboard = () => {
         description: formData.description,
         content: formData.content,
         category: formData.category,
-        source: formData.source || "ZA News Hub",
+        source: formData.source || "City News ZA",
         publishedAt: new Date().toISOString(),
         imageUrl: formData.imageUrl || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
         url: `#/article/${editingId || Date.now().toString()}`,
@@ -96,6 +122,7 @@ const AdminDashboard = () => {
     });
     setIsCreating(false);
     setEditingId(null);
+    setUploadedImage(null);
   };
 
   const handleEdit = (article: NewsArticle) => {
@@ -109,6 +136,7 @@ const AdminDashboard = () => {
       isTrending: article.isTrending
     });
     setEditingId(article.id);
+    setUploadedImage(article.imageUrl);
     setIsCreating(true);
   };
 
@@ -186,7 +214,7 @@ const AdminDashboard = () => {
                       value={formData.source}
                       onChange={(e) => setFormData(prev => ({ ...prev, source: e.target.value }))}
                       className="glass-effect border-green-400/30 text-white"
-                      placeholder="ZA News Hub"
+                      placeholder="City News ZA"
                     />
                   </div>
                   <div>
@@ -199,6 +227,48 @@ const AdminDashboard = () => {
                       className="glass-effect border-green-400/30 text-white"
                       placeholder="https://..."
                     />
+                  </div>
+                </div>
+
+                {/* Feature Image Upload Section */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Feature Image
+                  </label>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <label
+                        htmlFor="image-upload"
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md cursor-pointer transition-colors"
+                      >
+                        <Upload className="h-4 w-4" />
+                        Upload Image
+                      </label>
+                      <span className="text-gray-400 text-sm">
+                        Max size: 5MB. Supports JPG, PNG, WebP
+                      </span>
+                    </div>
+                    
+                    {uploadedImage && (
+                      <div className="relative">
+                        <img
+                          src={uploadedImage}
+                          alt="Preview"
+                          className="w-full max-w-md h-48 object-cover rounded-lg border border-green-400/30"
+                        />
+                        <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                          <ImageIcon className="h-3 w-3" />
+                          Uploaded
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
