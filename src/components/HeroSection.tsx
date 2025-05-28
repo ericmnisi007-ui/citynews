@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, TrendingUp, Clock, Eye, Play, ArrowRight } from "lucide-react";
+import { TrendingUp, Clock, Eye, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const HeroSection = () => {
@@ -58,17 +58,21 @@ const HeroSection = () => {
       title: "Opening Article",
       description: `Reading: ${story.title}`,
     });
-    // In a real app, this would navigate to the full article
     window.open(`https://example.com/article/${story.id}`, '_blank');
   };
 
   const currentStory = heroStories[currentSlide];
 
+  const backgroundPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
+
   return (
     <section className="relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%2322c55e\" fill-opacity=\"0.03\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50"></div>
+        <div 
+          className="absolute inset-0 opacity-50"
+          style={{ backgroundImage: `url("${backgroundPattern}")` }}
+        ></div>
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
       </div>
 
