@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Users, Building, Zap, Trophy, Globe } from "lucide-react";
+import { TrendingUp, Users, Building, Zap, Trophy, Globe, ArrowRight } from "lucide-react";
 
 const CategorySection = () => {
   const categories = [
@@ -12,90 +12,90 @@ const CategorySection = () => {
       icon: TrendingUp,
       count: 24,
       description: "Breaking news and top stories",
-      color: "from-red-500 to-orange-500",
-      bgColor: "bg-red-50"
+      gradient: "from-red-500 to-orange-500",
+      bgGradient: "from-red-500/10 to-orange-500/10"
     },
     {
       name: "Politics",
       icon: Users,
       count: 18,
       description: "Government and political updates",
-      color: "from-blue-500 to-purple-500",
-      bgColor: "bg-blue-50"
+      gradient: "from-blue-500 to-purple-500",
+      bgGradient: "from-blue-500/10 to-purple-500/10"
     },
     {
       name: "Business",
       icon: Building,
       count: 32,
       description: "Economic and market news",
-      color: "from-green-500 to-teal-500",
-      bgColor: "bg-green-50"
+      gradient: "from-green-500 to-teal-500",
+      bgGradient: "from-green-500/10 to-teal-500/10"
     },
     {
       name: "Technology",
       icon: Zap,
       count: 15,
       description: "Tech innovations and startups",
-      color: "from-purple-500 to-pink-500",
-      bgColor: "bg-purple-50"
+      gradient: "from-purple-500 to-pink-500",
+      bgGradient: "from-purple-500/10 to-pink-500/10"
     },
     {
       name: "Sports",
       icon: Trophy,
       count: 28,
       description: "Sports news and updates",
-      color: "from-orange-500 to-red-500",
-      bgColor: "bg-orange-50"
+      gradient: "from-orange-500 to-red-500",
+      bgGradient: "from-orange-500/10 to-red-500/10"
     },
     {
       name: "General",
       icon: Globe,
       count: 41,
       description: "General news and lifestyle",
-      color: "from-teal-500 to-blue-500",
-      bgColor: "bg-teal-50"
+      gradient: "from-teal-500 to-blue-500",
+      bgGradient: "from-teal-500/10 to-blue-500/10"
     }
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Browse by Category</h2>
-        <p className="text-lg text-gray-600">Explore news by your interests</p>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="text-center mb-16 animate-slide-up">
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Browse by Category</h2>
+        <p className="text-xl text-gray-400 max-w-2xl mx-auto">Explore news that interests you most</p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {categories.map((category, index) => {
           const IconComponent = category.icon;
           return (
             <Card 
               key={category.name}
-              className={`group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${category.bgColor} border-0 animate-fade-in`}
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className={`group cursor-pointer glass-effect border border-white/10 hover-lift animate-slide-up stagger-${index + 1} bg-gradient-to-br ${category.bgGradient}`}
             >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-3 rounded-lg bg-gradient-to-r ${category.color}`}>
-                    <IconComponent className="h-6 w-6 text-white" />
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div className={`p-4 rounded-2xl bg-gradient-to-r ${category.gradient} glow-yellow`}>
+                    <IconComponent className="h-8 w-8 text-white" />
                   </div>
-                  <Badge variant="secondary" className="bg-white/80">
+                  <Badge variant="secondary" className="glass-effect border border-yellow-400/30 text-yellow-400">
                     {category.count} articles
                   </Badge>
                 </div>
                 
-                <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">
+                <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-yellow-400 transition-colors duration-300">
                   {category.name}
                 </h3>
                 
-                <p className="text-gray-600 text-sm mb-4">
+                <p className="text-gray-400 mb-6 leading-relaxed">
                   {category.description}
                 </p>
                 
                 <Button 
                   variant="ghost" 
-                  className="w-full group-hover:bg-white/50 transition-colors"
+                  className="w-full glass-effect border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:text-yellow-300 group-hover:scale-105 transition-all duration-300"
                 >
                   View Articles
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                 </Button>
               </CardContent>
             </Card>
