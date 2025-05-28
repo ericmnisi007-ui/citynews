@@ -5,32 +5,43 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Clock, Eye, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
 
-const FeaturedArticles = () => {
+interface FeaturedArticlesProps {
+  articles?: NewsArticle[];
+}
+
+const FeaturedArticles = ({ articles: propArticles }: FeaturedArticlesProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!propArticles);
 
   useEffect(() => {
-    const loadArticles = async () => {
-      try {
-        const featuredArticles = await NewsService.getFeaturedArticles(3);
-        setArticles(featuredArticles);
-      } catch (error) {
-        console.error('Error loading articles:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load articles. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (propArticles) {
+      setArticles(propArticles);
+      setLoading(false);
+    } else {
+      const loadArticles = async () => {
+        try {
+          const featuredArticles = await NewsService.getFeaturedArticles(3);
+          setArticles(featuredArticles);
+        } catch (error) {
+          console.error('Error loading articles:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load articles. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    loadArticles();
-  }, [toast]);
+      loadArticles();
+    }
+  }, [propArticles, toast]);
 
   const getCategoryColor = (category: string) => {
     const colors = {
@@ -50,68 +61,7 @@ const FeaturedArticles = () => {
       title: "Opening Article",
       description: `Reading: ${article.title}`,
     });
-    
-    // Create a simple article reader modal or new page
-    const articleWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
-    if (articleWindow) {
-      articleWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>${article.title}</title>
-          <style>
-            body { 
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-              max-width: 800px; 
-              margin: 0 auto; 
-              padding: 20px;
-              line-height: 1.6;
-              color: #333;
-            }
-            .header { border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
-            .category { 
-              background: #22c55e; 
-              color: white; 
-              padding: 4px 12px; 
-              border-radius: 16px; 
-              font-size: 14px; 
-              display: inline-block;
-              margin-bottom: 10px;
-            }
-            .title { font-size: 32px; font-weight: bold; margin: 10px 0; }
-            .meta { color: #666; font-size: 14px; margin-bottom: 20px; }
-            .image { width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 20px; }
-            .content { font-size: 18px; line-height: 1.8; }
-            .source { 
-              margin-top: 30px; 
-              padding-top: 20px; 
-              border-top: 1px solid #eee; 
-              color: #666; 
-              font-size: 14px; 
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <div class="category">${article.category}</div>
-            <h1 class="title">${article.title}</h1>
-            <div class="meta">
-              Published ${NewsService.formatTimeAgo(article.publishedAt)} • ${NewsService.formatViews(article.views)} views
-            </div>
-          </div>
-          <img src="${article.imageUrl}" alt="${article.title}" class="image" />
-          <div class="content">
-            <p><strong>${article.description}</strong></p>
-            <p>${article.content}</p>
-          </div>
-          <div class="source">
-            Source: ${article.source} | <a href="${article.url}" target="_blank">View Original Article</a>
-          </div>
-        </body>
-        </html>
-      `);
-      articleWindow.document.close();
-    }
+    navigate(`/article/${article.id}`);
   };
 
   const handleViewAll = async () => {
@@ -151,19 +101,21 @@ const FeaturedArticles = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div className="flex items-center justify-between mb-12 animate-slide-up">
-        <div>
-          <h2 className="text-4xl font-bold text-white mb-2">Featured Stories</h2>
-          <p className="text-gray-400">Real news from trusted South African sources</p>
+      {!propArticles && (
+        <div className="flex items-center justify-between mb-12 animate-slide-up">
+          <div>
+            <h2 className="text-4xl font-bold text-white mb-2">Featured Stories</h2>
+            <p className="text-gray-400">Real news from trusted South African sources</p>
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={handleViewAll}
+            className="glass-effect border-green-400/30 text-green-400 hover:bg-green-400/10"
+          >
+            View All Articles
+          </Button>
         </div>
-        <Button 
-          variant="outline" 
-          onClick={handleViewAll}
-          className="glass-effect border-green-400/30 text-green-400 hover:bg-green-400/10"
-        >
-          View All Articles
-        </Button>
-      </div>
+      )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {articles.map((article, index) => (

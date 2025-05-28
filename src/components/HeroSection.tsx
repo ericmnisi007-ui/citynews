@@ -1,13 +1,14 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Clock, Eye, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const heroStories = [
@@ -58,7 +59,7 @@ const HeroSection = () => {
       title: "Opening Article",
       description: `Reading: ${story.title}`,
     });
-    window.open(`https://example.com/article/${story.id}`, '_blank');
+    navigate(`/article/${story.id}`);
   };
 
   const currentStory = heroStories[currentSlide];
@@ -76,7 +77,7 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20">
         {/* Hero Header */}
         <div className="text-center mb-16 animate-slide-up">
           <div className="inline-flex items-center px-6 py-3 rounded-full glass-effect border border-green-400/30 mb-8 animate-float">

@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Menu, Search, Globe, Zap } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   const categories = ["Headlines", "Politics", "Business", "Sports", "Technology"];
 
   useEffect(() => {
@@ -19,17 +21,15 @@ const Navbar = () => {
   }, []);
 
   const handleCategoryClick = (category: string) => {
-    toast({
-      title: `${category} Selected`,
-      description: `Browsing ${category} news stories`,
-    });
+    navigate(`/category/${category.toLowerCase()}`);
   };
 
   const handleSearchClick = () => {
-    toast({
-      title: "Search",
-      description: "Search functionality activated",
-    });
+    navigate('/search');
+  };
+
+  const handleLogoClick = () => {
+    navigate('/');
   };
 
   return (
@@ -41,7 +41,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <div className="flex items-center space-x-4 animate-slide-in-left">
+          <div className="flex items-center space-x-4 animate-slide-in-left cursor-pointer" onClick={handleLogoClick}>
             <div className="relative">
               <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-xl glow-green">
                 <Globe className="h-7 w-7 text-white animate-pulse-slow" />
