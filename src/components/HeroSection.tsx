@@ -4,8 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, TrendingUp, Clock, Eye } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const HeroSection = () => {
+  const { toast } = useToast();
+  
   const featuredStory = {
     title: "Breaking: Major Economic Development Announced in Cape Town",
     category: "Headlines",
@@ -14,6 +17,13 @@ const HeroSection = () => {
     source: "IOL News",
     timeAgo: "2 hours ago",
     views: "2.4k"
+  };
+
+  const handleReadMore = () => {
+    toast({
+      title: "Article Opened",
+      description: "Reading the full story...",
+    });
   };
 
   return (
@@ -70,7 +80,10 @@ const HeroSection = () => {
               <span className="text-sm font-medium text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full">
                 {featuredStory.source}
               </span>
-              <Button className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold hover-lift glow-yellow">
+              <Button 
+                onClick={handleReadMore}
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold hover-lift glow-yellow"
+              >
                 Read Full Story
                 <ExternalLink className="h-4 w-4 ml-2" />
               </Button>

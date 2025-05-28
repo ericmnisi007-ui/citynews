@@ -4,8 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Clock, Eye, TrendingUp } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const FeaturedArticles = () => {
+  const { toast } = useToast();
+  
   const articles = [
     {
       id: 1,
@@ -53,6 +56,20 @@ const FeaturedArticles = () => {
     return colors[category as keyof typeof colors] || "from-gray-500 to-gray-600";
   };
 
+  const handleReadMore = (title: string) => {
+    toast({
+      title: "Article Opened",
+      description: `Reading: ${title}`,
+    });
+  };
+
+  const handleViewAll = () => {
+    toast({
+      title: "View All Articles",
+      description: "Loading all featured articles...",
+    });
+  };
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div className="flex items-center justify-between mb-12 animate-slide-up">
@@ -60,7 +77,11 @@ const FeaturedArticles = () => {
           <h2 className="text-4xl font-bold text-white mb-2">Featured Stories</h2>
           <p className="text-gray-400">Handpicked news that matters most</p>
         </div>
-        <Button variant="outline" className="glass-effect border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10">
+        <Button 
+          variant="outline" 
+          onClick={handleViewAll}
+          className="glass-effect border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10"
+        >
           View All Articles
         </Button>
       </div>
@@ -117,7 +138,12 @@ const FeaturedArticles = () => {
                 <span className="text-sm font-medium text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full">
                   {article.source}
                 </span>
-                <Button size="sm" variant="ghost" className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10">
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => handleReadMore(article.title)}
+                  className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10"
+                >
                   Read More
                   <ExternalLink className="h-3 w-3 ml-1" />
                 </Button>

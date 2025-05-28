@@ -4,8 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Users, Building, Zap, Trophy, Globe, ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const CategorySection = () => {
+  const { toast } = useToast();
+  
   const categories = [
     {
       name: "Headlines",
@@ -57,6 +60,13 @@ const CategorySection = () => {
     }
   ];
 
+  const handleCategoryClick = (categoryName: string) => {
+    toast({
+      title: `${categoryName} Category`,
+      description: `Browsing ${categoryName} articles...`,
+    });
+  };
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div className="text-center mb-16 animate-slide-up">
@@ -92,6 +102,7 @@ const CategorySection = () => {
                 
                 <Button 
                   variant="ghost" 
+                  onClick={() => handleCategoryClick(category.name)}
                   className="w-full glass-effect border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:text-yellow-300 group-hover:scale-105 transition-all duration-300"
                 >
                   View Articles

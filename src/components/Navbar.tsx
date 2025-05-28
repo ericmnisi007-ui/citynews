@@ -3,9 +3,11 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Search, Globe, Zap } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { toast } = useToast();
   const categories = ["Headlines", "Politics", "Business", "Sports", "Technology"];
 
   useEffect(() => {
@@ -15,6 +17,20 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleCategoryClick = (category: string) => {
+    toast({
+      title: `${category} Selected`,
+      description: `Browsing ${category} news stories`,
+    });
+  };
+
+  const handleSearchClick = () => {
+    toast({
+      title: "Search",
+      description: "Search functionality activated",
+    });
+  };
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
@@ -48,6 +64,7 @@ const Navbar = () => {
               <Button
                 key={category}
                 variant="ghost"
+                onClick={() => handleCategoryClick(category)}
                 className={`text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 transition-all duration-300 border border-transparent hover:border-yellow-400/30 rounded-xl animate-slide-up stagger-${index + 1}`}
               >
                 {category}
@@ -60,6 +77,7 @@ const Navbar = () => {
             <Button 
               variant="outline" 
               size="sm" 
+              onClick={handleSearchClick}
               className="hidden sm:flex glass-effect border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:text-yellow-300 glow-yellow"
             >
               <Search className="h-4 w-4 mr-2" />
@@ -79,6 +97,7 @@ const Navbar = () => {
                     <Button 
                       key={category} 
                       variant="ghost" 
+                      onClick={() => handleCategoryClick(category)}
                       className={`justify-start text-gray-300 hover:text-yellow-400 hover:bg-yellow-400/10 animate-slide-in-right stagger-${index + 1}`}
                     >
                       {category}
