@@ -80,7 +80,7 @@ const FeaturedArticles = () => {
         <Button 
           variant="outline" 
           onClick={handleViewAll}
-          className="glass-effect border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10"
+          className="glass-effect border-green-400/30 text-green-400 hover:bg-green-400/10"
         >
           View All Articles
         </Button>
@@ -90,7 +90,7 @@ const FeaturedArticles = () => {
         {articles.map((article, index) => (
           <Card 
             key={article.id} 
-            className={`glass-effect border border-white/10 overflow-hidden hover-lift group animate-slide-up stagger-${index + 1}`}
+            className={`glass-effect border border-green-400/20 overflow-hidden hover-lift group animate-slide-up stagger-${index + 1}`}
           >
             <div className="relative overflow-hidden">
               <img
@@ -104,7 +104,7 @@ const FeaturedArticles = () => {
                   {article.category}
                 </Badge>
                 {article.trending && (
-                  <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black border-0 animate-pulse">
+                  <Badge className="bg-gradient-to-r from-green-400 to-emerald-500 text-black border-0 animate-pulse">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     Trending
                   </Badge>
@@ -113,7 +113,7 @@ const FeaturedArticles = () => {
             </div>
             
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2 group-hover:text-yellow-400 transition-colors duration-300">
+              <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2 group-hover:text-green-400 transition-colors duration-300">
                 {article.title}
               </h3>
               
@@ -135,14 +135,14 @@ const FeaturedArticles = () => {
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full">
+                <span className="text-sm font-medium text-green-400 bg-green-400/10 px-2 py-1 rounded-full">
                   {article.source}
                 </span>
                 <Button 
                   size="sm" 
                   variant="ghost" 
                   onClick={() => handleReadMore(article.title)}
-                  className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10"
+                  className="text-green-400 hover:text-green-300 hover:bg-green-400/10"
                 >
                   Read More
                   <ExternalLink className="h-3 w-3 ml-1" />

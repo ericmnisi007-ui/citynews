@@ -80,19 +80,19 @@ const CategorySection = () => {
           return (
             <Card 
               key={category.name}
-              className={`group cursor-pointer glass-effect border border-white/10 hover-lift animate-slide-up stagger-${index + 1} bg-gradient-to-br ${category.bgGradient}`}
+              className={`group cursor-pointer glass-effect border border-green-400/20 hover-lift animate-slide-up stagger-${index + 1} bg-gradient-to-br ${category.bgGradient}`}
             >
               <CardContent className="p-8">
                 <div className="flex items-center justify-between mb-6">
-                  <div className={`p-4 rounded-2xl bg-gradient-to-r ${category.gradient} glow-yellow`}>
+                  <div className={`p-4 rounded-2xl bg-gradient-to-r ${category.gradient} glow-green`}>
                     <IconComponent className="h-8 w-8 text-white" />
                   </div>
-                  <Badge variant="secondary" className="glass-effect border border-yellow-400/30 text-yellow-400">
+                  <Badge variant="secondary" className="glass-effect border border-green-400/30 text-green-400">
                     {category.count} articles
                   </Badge>
                 </div>
                 
-                <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-yellow-400 transition-colors duration-300">
+                <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-green-400 transition-colors duration-300">
                   {category.name}
                 </h3>
                 
@@ -103,7 +103,7 @@ const CategorySection = () => {
                 <Button 
                   variant="ghost" 
                   onClick={() => handleCategoryClick(category.name)}
-                  className="w-full glass-effect border border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:text-yellow-300 group-hover:scale-105 transition-all duration-300"
+                  className="w-full glass-effect border border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 group-hover:scale-105 transition-all duration-300"
                 >
                   View Articles
                   <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
