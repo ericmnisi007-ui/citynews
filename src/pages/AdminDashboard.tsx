@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +42,7 @@ const AdminDashboard = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         toast({
           title: "File too large",
           description: "Please select an image under 5MB",
@@ -77,7 +78,7 @@ const AdminDashboard = () => {
     }
 
     try {
-      const newArticle: NewsArticle = {
+      const articleData: NewsArticle = {
         id: editingId || Date.now().toString(),
         title: formData.title,
         description: formData.description,
@@ -91,8 +92,11 @@ const AdminDashboard = () => {
         isTrending: formData.isTrending
       };
 
-      // In a real app, this would save to the backend
-      console.log('Saving article:', newArticle);
+      if (editingId) {
+        await NewsService.updateArticle(articleData);
+      } else {
+        await NewsService.addArticle(articleData);
+      }
       
       toast({
         title: editingId ? "Article Updated" : "Article Created",
@@ -140,12 +144,21 @@ const AdminDashboard = () => {
     setIsCreating(true);
   };
 
-  const handleDelete = (id: string) => {
-    // In a real app, this would delete from the backend
-    toast({
-      title: "Article Deleted",
-      description: "Article has been deleted successfully",
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      await NewsService.deleteArticle(id);
+      toast({
+        title: "Article Deleted",
+        description: "Article has been deleted successfully",
+      });
+      loadArticles();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete article",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -163,7 +176,7 @@ const AdminDashboard = () => {
         </div>
 
         {isCreating && (
-          <Card className="glass-effect border border-green-400/20 mb-8">
+          <Card className="glass-effect border border-green-400/20 mb-8 bg-slate-900/50">
             <CardHeader>
               <CardTitle className="text-white">
                 {editingId ? 'Edit Article' : 'Create New Article'}
@@ -179,7 +192,7 @@ const AdminDashboard = () => {
                     <Input
                       value={formData.title}
                       onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                      className="glass-effect border-green-400/30 text-white"
+                      className="bg-slate-800/50 border-green-400/30 text-white placeholder:text-gray-400"
                       required
                     />
                   </div>
@@ -191,15 +204,16 @@ const AdminDashboard = () => {
                       value={formData.category}
                       onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                     >
-                      <SelectTrigger className="glass-effect border-green-400/30 text-white">
+                      <SelectTrigger className="bg-slate-800/50 border-green-400/30 text-white">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Headlines">Headlines</SelectItem>
-                        <SelectItem value="Politics">Politics</SelectItem>
-                        <SelectItem value="Business">Business</SelectItem>
-                        <SelectItem value="Sports">Sports</SelectItem>
-                        <SelectItem value="Technology">Technology</SelectItem>
+                      <SelectContent className="bg-slate-800 border-green-400/30">
+                        <SelectItem value="Headlines" className="text-white hover:bg-slate-700">Headlines</SelectItem>
+                        <SelectItem value="Politics" className="text-white hover:bg-slate-700">Politics</SelectItem>
+                        <SelectItem value="Business" className="text-white hover:bg-slate-700">Business</SelectItem>
+                        <SelectItem value="Sports" className="text-white hover:bg-slate-700">Sports</SelectItem>
+                        <SelectItem value="Technology" className="text-white hover:bg-slate-700">Technology</SelectItem>
+                        <SelectItem value="General" className="text-white hover:bg-slate-700">General</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -213,7 +227,7 @@ const AdminDashboard = () => {
                     <Input
                       value={formData.source}
                       onChange={(e) => setFormData(prev => ({ ...prev, source: e.target.value }))}
-                      className="glass-effect border-green-400/30 text-white"
+                      className="bg-slate-800/50 border-green-400/30 text-white placeholder:text-gray-400"
                       placeholder="City News ZA"
                     />
                   </div>
@@ -224,13 +238,12 @@ const AdminDashboard = () => {
                     <Input
                       value={formData.imageUrl}
                       onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                      className="glass-effect border-green-400/30 text-white"
+                      className="bg-slate-800/50 border-green-400/30 text-white placeholder:text-gray-400"
                       placeholder="https://..."
                     />
                   </div>
                 </div>
 
-                {/* Feature Image Upload Section */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Feature Image
@@ -279,7 +292,7 @@ const AdminDashboard = () => {
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    className="glass-effect border-green-400/30 text-white h-24"
+                    className="bg-slate-800/50 border-green-400/30 text-white placeholder:text-gray-400 h-24"
                     required
                   />
                 </div>
@@ -291,7 +304,7 @@ const AdminDashboard = () => {
                   <Textarea
                     value={formData.content}
                     onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                    className="glass-effect border-green-400/30 text-white h-48"
+                    className="bg-slate-800/50 border-green-400/30 text-white placeholder:text-gray-400 h-48"
                     required
                   />
                 </div>
@@ -301,7 +314,7 @@ const AdminDashboard = () => {
                     <Save className="h-4 w-4 mr-2" />
                     {editingId ? 'Update' : 'Create'} Article
                   </Button>
-                  <Button type="button" variant="outline" onClick={resetForm}>
+                  <Button type="button" variant="outline" onClick={resetForm} className="border-gray-600 text-gray-300 hover:bg-slate-700">
                     Cancel
                   </Button>
                 </div>
@@ -313,7 +326,7 @@ const AdminDashboard = () => {
         <div className="grid gap-6">
           <h2 className="text-2xl font-bold text-white">Manage Articles</h2>
           {articles.map((article) => (
-            <Card key={article.id} className="glass-effect border border-green-400/20">
+            <Card key={article.id} className="glass-effect border border-green-400/20 bg-slate-900/50">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

@@ -9,7 +9,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
       <div className="relative z-10">
         <HeroSection />
-        <FeaturedArticles />
+        <FeaturedArticles showOnlyHeadlines={true} />
         <CategorySection />
       </div>
     </div>

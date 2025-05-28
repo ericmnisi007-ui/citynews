@@ -9,9 +9,10 @@ import LoadingGrid from "./LoadingGrid";
 
 interface FeaturedArticlesProps {
   articles?: NewsArticle[];
+  showOnlyHeadlines?: boolean;
 }
 
-const FeaturedArticles = ({ articles: propArticles }: FeaturedArticlesProps) => {
+const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }: FeaturedArticlesProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
@@ -24,7 +25,12 @@ const FeaturedArticles = ({ articles: propArticles }: FeaturedArticlesProps) => 
     } else {
       const loadArticles = async () => {
         try {
-          const featuredArticles = await NewsService.getFeaturedArticles(3);
+          let featuredArticles;
+          if (showOnlyHeadlines) {
+            featuredArticles = await NewsService.getHeadlinesOnly();
+          } else {
+            featuredArticles = await NewsService.getFeaturedArticles(3);
+          }
           setArticles(featuredArticles);
         } catch (error) {
           console.error('Error loading articles:', error);
@@ -40,7 +46,7 @@ const FeaturedArticles = ({ articles: propArticles }: FeaturedArticlesProps) => 
 
       loadArticles();
     }
-  }, [propArticles, toast]);
+  }, [propArticles, showOnlyHeadlines, toast]);
 
   const handleReadMore = (article: NewsArticle) => {
     NewsService.incrementViews(article.id);
