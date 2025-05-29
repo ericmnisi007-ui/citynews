@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, Eye, Share2 } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const ArticleDetail = () => {
@@ -39,6 +40,42 @@ const ArticleDetail = () => {
     loadArticle();
   }, [id, toast]);
 
+  // Set up real-time subscription for this specific article
+  useEffect(() => {
+    if (!id) return;
+
+    const channel = supabase
+      .channel(`article-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'articles',
+          filter: `id=eq.${id}`
+        },
+        async (payload) => {
+          console.log('Article updated:', payload);
+          // Reload the article
+          try {
+            const updatedArticle = await NewsService.getArticleById(id);
+            setArticle(updatedArticle);
+            toast({
+              title: "Article Updated",
+              description: "This article has been updated with new content.",
+            });
+          } catch (error) {
+            console.error('Error reloading article:', error);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, toast]);
+
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -53,6 +90,17 @@ const ArticleDetail = () => {
         description: "Article link copied to clipboard",
       });
     }
+  };
+
+  const formatContentWithParagraphs = (content: string) => {
+    return content.split('\n').map((paragraph, index) => {
+      if (paragraph.trim() === '') return null;
+      return (
+        <p key={index} className="text-gray-300 leading-relaxed text-lg mb-4">
+          {paragraph.trim()}
+        </p>
+      );
+    }).filter(Boolean);
   };
 
   if (loading) {
@@ -131,14 +179,12 @@ const ArticleDetail = () => {
             </p>
 
             <div className="prose prose-invert max-w-none">
-              <p className="text-gray-300 leading-relaxed text-lg">
-                {article.content}
-              </p>
+              {formatContentWithParagraphs(article.content)}
             </div>
 
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-700">
               <div className="text-sm text-gray-400">
-                Source: <span className="text-green-400">News Source</span>
+                Source: <span className="text-green-400">{article.source}</span>
               </div>
               <Button
                 onClick={handleShare}

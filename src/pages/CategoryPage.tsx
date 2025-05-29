@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
+import { supabase } from "@/integrations/supabase/client";
 import FeaturedArticles from "@/components/FeaturedArticles";
 import { useToast } from "@/hooks/use-toast";
 
@@ -31,6 +32,46 @@ const CategoryPage = () => {
     };
 
     loadCategoryArticles();
+  }, [category, toast]);
+
+  // Set up real-time subscription for category articles
+  useEffect(() => {
+    if (!category) return;
+
+    const channel = supabase
+      .channel(`category-${category}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'articles'
+        },
+        async (payload) => {
+          console.log('Category articles updated:', payload);
+          
+          // Reload category articles when changes occur
+          try {
+            const updatedArticles = await NewsService.getArticlesByCategory(category);
+            setArticles(updatedArticles);
+            
+            // Show toast for relevant updates
+            if (payload.eventType === 'INSERT' && payload.new?.category === category) {
+              toast({
+                title: "New Article Added",
+                description: `A new article has been added to ${category}.`,
+              });
+            }
+          } catch (error) {
+            console.error('Error reloading category articles:', error);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [category, toast]);
 
   const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
