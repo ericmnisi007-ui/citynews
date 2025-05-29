@@ -82,7 +82,7 @@ const Navbar = () => {
               variant="outline" 
               size="sm" 
               onClick={handleSearchClick}
-              className="hidden sm:flex glass-effect border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 glow-green"
+              className="hidden sm:flex bg-slate-900/70 backdrop-blur-md border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 glow-green"
             >
               <Search className="h-4 w-4 mr-2" />
               Search
@@ -92,7 +92,7 @@ const Navbar = () => {
               variant="outline" 
               size="sm" 
               onClick={handleAdminClick}
-              className="hidden sm:flex glass-effect border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300"
+              className="hidden sm:flex bg-slate-900/70 backdrop-blur-md border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300"
             >
               <Settings className="h-4 w-4 mr-2" />
               Admin
@@ -101,11 +101,11 @@ const Navbar = () => {
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="md:hidden glass-effect border-green-400/30 text-green-400 hover:bg-green-400/10">
+                <Button variant="outline" size="sm" className="md:hidden bg-slate-900/70 backdrop-blur-md border-green-400/30 text-green-400 hover:bg-green-400/10">
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="glass-effect border-l border-green-400/30">
+              <SheetContent className="bg-slate-900/95 backdrop-blur-md border-l border-green-400/30">
                 <div className="flex flex-col space-y-4 mt-8">
                   {categories.map((category, index) => (
                     <Button 

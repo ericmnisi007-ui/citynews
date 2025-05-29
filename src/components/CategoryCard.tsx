@@ -18,14 +18,14 @@ const CategoryCard = ({ category, count, index, onCategoryClick }: CategoryCardP
   
   return (
     <Card 
-      className={`group cursor-pointer glass-effect border border-green-400/20 hover-lift animate-slide-up stagger-${index + 1} bg-gradient-to-br ${category.bgGradient}`}
+      className={`group cursor-pointer bg-slate-900/70 backdrop-blur-md border border-green-400/20 hover-lift animate-slide-up stagger-${index + 1}`}
     >
-      <CardContent className="p-8">
+      <CardContent className="p-8 bg-slate-900/50">
         <div className="flex items-center justify-between mb-6">
           <div className={`p-4 rounded-2xl bg-gradient-to-r ${category.gradient} glow-green`}>
             <IconComponent className="h-8 w-8 text-white" />
           </div>
-          <Badge variant="secondary" className="glass-effect border border-green-400/30 text-green-400">
+          <Badge variant="secondary" className="bg-slate-800/80 border border-green-400/30 text-green-400">
             {count} articles
           </Badge>
         </div>
@@ -41,7 +41,7 @@ const CategoryCard = ({ category, count, index, onCategoryClick }: CategoryCardP
         <Button 
           variant="ghost" 
           onClick={() => onCategoryClick(category.name)}
-          className="w-full glass-effect border border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 group-hover:scale-105 transition-all duration-300"
+          className="w-full bg-slate-800/50 border border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 group-hover:scale-105 transition-all duration-300"
           disabled={count === 0}
         >
           {count === 0 ? 'No Articles' : 'View Articles'}
