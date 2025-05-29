@@ -45,20 +45,45 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
     return views.toString();
   };
 
-  const handleShare = (e: React.MouseEvent) => {
+  const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (navigator.share) {
-      navigator.share({
-        title: article.title,
-        text: article.description,
-        url: `${window.location.origin}/article/${article.id}`,
-      });
-    } else {
-      navigator.clipboard.writeText(`${window.location.origin}/article/${article.id}`);
-      toast({
-        title: "Link Copied",
-        description: "Article link copied to clipboard",
-      });
+    
+    const shareData = {
+      title: article.title,
+      text: article.description,
+      url: `${window.location.origin}/article/${article.id}`,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        toast({
+          title: "Shared Successfully",
+          description: "Article shared successfully",
+        });
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({
+          title: "Link Copied",
+          description: "Article link copied to clipboard",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        toast({
+          title: "Link Copied",
+          description: "Article link copied to clipboard",
+        });
+      } catch (clipboardError) {
+        console.error('Clipboard error:', clipboardError);
+        toast({
+          title: "Share Failed",
+          description: "Unable to share or copy link",
+          variant: "destructive",
+        });
+      }
     }
   };
 
