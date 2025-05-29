@@ -19,7 +19,7 @@ interface ArticleFormProps {
 const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormProps) => {
   const { toast } = useToast();
   const [uploadedImage, setUploadedImage] = useState<string | null>(editingArticle?.imageUrl || null);
-  const [rssUrl, setRssUrl] = useState("");
+  const [selectedRssFeed, setSelectedRssFeed] = useState("");
   const [rssCategory, setRssCategory] = useState("");
   const [customDate, setCustomDate] = useState(
     editingArticle?.publishedAt ? new Date(editingArticle.publishedAt).toISOString().slice(0, 16) : ""
@@ -34,16 +34,24 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
     isTrending: editingArticle?.isTrending || false
   });
 
+  const rssFeeds = [
+    { label: "IOL Politics", url: "https://www.iol.co.za/news/politics/rss" },
+    { label: "IOL News", url: "https://www.iol.co.za/news/rss" },
+    { label: "IOL Business Report", url: "https://www.iol.co.za/business-report/rss" },
+    { label: "SuperSport Video", url: "https://supersport.com/rss/video" },
+    { label: "AI In The News", url: "http://feeds.feedburner.com/AIInTheNews" }
+  ];
+
   const handleImageUpload = (imageUrl: string) => {
     setUploadedImage(imageUrl);
     setFormData(prev => ({ ...prev, imageUrl }));
   };
 
   const handleFetchRSS = async () => {
-    if (!rssUrl || !rssCategory) {
+    if (!selectedRssFeed || !rssCategory) {
       toast({
         title: "Error",
-        description: "Please enter RSS URL and select a category",
+        description: "Please select an RSS feed and category",
         variant: "destructive",
       });
       return;
@@ -53,13 +61,13 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
       // Simulate RSS fetch - in real implementation, you'd use a proper RSS parser
       const mockRSSArticles = [
         {
-          title: "RSS Article 1",
+          title: `RSS Article from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`,
           description: "Description from RSS feed",
           content: "Full content from RSS feed...",
           imageUrl: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
         },
         {
-          title: "RSS Article 2", 
+          title: `Another RSS Article from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`, 
           description: "Another description from RSS feed",
           content: "Another full content from RSS feed...",
           imageUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
@@ -73,7 +81,7 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
           description: rssArticle.description,
           content: rssArticle.content,
           category: rssCategory,
-          source: new URL(rssUrl).hostname,
+          source: new URL(selectedRssFeed).hostname,
           publishedAt: new Date().toISOString(),
           imageUrl: rssArticle.imageUrl,
           url: `#/article/${Date.now().toString()}`,
@@ -86,10 +94,10 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
 
       toast({
         title: "RSS Feed Fetched",
-        description: `Added ${mockRSSArticles.length} articles to ${rssCategory} category`,
+        description: `Added ${mockRSSArticles.length} articles to ${rssCategory} category from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`,
       });
 
-      setRssUrl("");
+      setSelectedRssFeed("");
       setRssCategory("");
       onArticleSaved();
     } catch (error) {
@@ -165,14 +173,24 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
           <div className="grid md:grid-cols-3 gap-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                RSS Feed URL
+                RSS Feed Source
               </label>
-              <Input
-                value={rssUrl}
-                onChange={(e) => setRssUrl(e.target.value)}
-                placeholder="https://example.com/feed.xml"
-                className="bg-slate-800/50 border-green-400/30 text-white placeholder:text-gray-400"
-              />
+              <Select value={selectedRssFeed} onValueChange={setSelectedRssFeed}>
+                <SelectTrigger className="bg-slate-800/50 border-green-400/30 text-white">
+                  <SelectValue placeholder="Select RSS feed source" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-green-400/30">
+                  {rssFeeds.map((feed) => (
+                    <SelectItem 
+                      key={feed.url} 
+                      value={feed.url} 
+                      className="text-white hover:bg-slate-700"
+                    >
+                      {feed.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
