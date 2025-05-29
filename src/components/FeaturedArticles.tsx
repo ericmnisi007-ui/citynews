@@ -28,10 +28,24 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
         try {
           let featuredArticles;
           if (showOnlyHeadlines) {
-            featuredArticles = await NewsService.getHeadlinesOnly();
+            // Prioritize Headlines category for featured stories
+            const headlinesArticles = await NewsService.getHeadlinesOnly();
+            console.log('Headlines articles loaded:', headlinesArticles.length);
+            
+            if (headlinesArticles.length < 6) {
+              // If we don't have enough headlines, supplement with other articles
+              const allArticles = await NewsService.getAllArticles();
+              const nonHeadlines = allArticles
+                .filter(article => article.category !== 'Headlines')
+                .slice(0, 6 - headlinesArticles.length);
+              featuredArticles = [...headlinesArticles, ...nonHeadlines];
+            } else {
+              featuredArticles = headlinesArticles.slice(0, 6);
+            }
           } else {
-            featuredArticles = await NewsService.getFeaturedArticles(3);
+            featuredArticles = await NewsService.getFeaturedArticles(6);
           }
+          console.log('Featured articles loaded:', featuredArticles.length);
           setArticles(featuredArticles);
         } catch (error) {
           console.error('Error loading articles:', error);
@@ -70,9 +84,19 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
             try {
               let featuredArticles;
               if (showOnlyHeadlines) {
-                featuredArticles = await NewsService.getHeadlinesOnly();
+                const headlinesArticles = await NewsService.getHeadlinesOnly();
+                
+                if (headlinesArticles.length < 6) {
+                  const allArticles = await NewsService.getAllArticles();
+                  const nonHeadlines = allArticles
+                    .filter(article => article.category !== 'Headlines')
+                    .slice(0, 6 - headlinesArticles.length);
+                  featuredArticles = [...headlinesArticles, ...nonHeadlines];
+                } else {
+                  featuredArticles = headlinesArticles.slice(0, 6);
+                }
               } else {
-                featuredArticles = await NewsService.getFeaturedArticles(3);
+                featuredArticles = await NewsService.getFeaturedArticles(6);
               }
               setArticles(featuredArticles);
             } catch (error) {

@@ -16,7 +16,9 @@ const CategoryPage = () => {
     const loadCategoryArticles = async () => {
       if (category) {
         try {
+          console.log('Loading articles for category:', category);
           const categoryArticles = await NewsService.getArticlesByCategory(category);
+          console.log('Loaded articles:', categoryArticles);
           setArticles(categoryArticles);
         } catch (error) {
           console.error('Error loading category articles:', error);
@@ -81,7 +83,7 @@ const CategoryPage = () => {
             {capitalizedCategory} News
           </h1>
           <p className="text-xl text-gray-400">
-            Latest {capitalizedCategory?.toLowerCase()} stories from South Africa
+            Latest {capitalizedCategory?.toLowerCase()} stories from South Africa ({articles.length} articles)
           </p>
         </div>
 
@@ -97,6 +99,11 @@ const CategoryPage = () => {
                 </div>
               </div>
             ))}
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-xl text-gray-400 mb-4">No articles found in this category</p>
+            <p className="text-gray-500">Check back later for new content</p>
           </div>
         ) : (
           <FeaturedArticles articles={articles} />
