@@ -55,14 +55,14 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center space-x-4 animate-slide-in-left cursor-pointer" onClick={handleLogoClick}>
             <div className="relative">
-              <div className="bg-red-600 p-3 rounded-lg glow-red">
+              <div className="bg-green-600 p-3 rounded-lg glow-green">
                 <div className="text-white font-black text-xl leading-none">
                   CNZA
                 </div>
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent text-glow">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent text-glow">
                 City News ZA
               </h1>
               <p className="text-xs text-gray-400 font-medium">Independent & Authentic</p>
@@ -75,7 +75,7 @@ const Navbar = () => {
                 key={category}
                 variant="ghost"
                 onClick={() => handleCategoryClick(category)}
-                className={`text-gray-300 hover:text-white hover:bg-red-500 transition-all duration-300 border border-transparent hover:border-red-400/30 rounded-xl animate-slide-up stagger-${index + 1}`}
+                className={`text-gray-300 hover:text-white hover:bg-green-500 transition-all duration-300 border border-transparent hover:border-green-400/30 rounded-xl animate-slide-up stagger-${index + 1}`}
               >
                 {category}
               </Button>
@@ -87,7 +87,7 @@ const Navbar = () => {
               variant="outline" 
               size="sm" 
               onClick={handleSearchClick}
-              className="hidden sm:flex bg-red-500 hover:bg-red-600 border-red-500 text-white hover:text-white"
+              className="hidden sm:flex bg-green-500 hover:bg-green-600 border-green-500 text-white hover:text-white"
             >
               <Search className="h-4 w-4 mr-2" />
               Search
@@ -103,18 +103,18 @@ const Navbar = () => {
             
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="md:hidden bg-red-500 hover:bg-red-600 border-red-500 text-white hover:text-white">
+                <Button variant="outline" size="sm" className="md:hidden bg-green-500 hover:bg-green-600 border-green-500 text-white hover:text-white">
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="bg-slate-900/95 backdrop-blur-md border-l border-red-400/30">
+              <SheetContent className="bg-slate-900/95 backdrop-blur-md border-l border-green-400/30">
                 <div className="flex flex-col space-y-4 mt-8">
                   {categories.map((category, index) => (
                     <Button 
                       key={category} 
                       variant="ghost" 
                       onClick={() => handleCategoryClick(category)}
-                      className={`justify-start text-gray-300 hover:text-white hover:bg-red-500 animate-slide-in-right stagger-${index + 1}`}
+                      className={`justify-start text-gray-300 hover:text-white hover:bg-green-500 animate-slide-in-right stagger-${index + 1}`}
                     >
                       {category}
                     </Button>

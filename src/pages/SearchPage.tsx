@@ -55,11 +55,11 @@ const SearchPage = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="bg-white/10 border-red-400/30 text-white placeholder-gray-300 focus:border-red-400 focus:ring-red-400/20"
+                className="bg-white/10 border-green-400/30 text-white placeholder-gray-300 focus:border-green-400 focus:ring-green-400/20"
               />
               <Button
                 onClick={handleSearch}
-                className="bg-red-500 hover:bg-red-600"
+                className="bg-green-500 hover:bg-green-600"
                 disabled={loading}
               >
                 <Search className="h-4 w-4" />
