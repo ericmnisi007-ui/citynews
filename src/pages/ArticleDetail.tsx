@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -150,7 +149,7 @@ const ArticleDetail = () => {
 
         <article className="bg-slate-900/50 backdrop-blur-sm border border-green-400/20 rounded-xl overflow-hidden">
           <img
-            src={article.imageUrl}
+            src={article.image_url}
             alt={article.title}
             className="w-full h-64 md:h-96 object-cover"
           />
@@ -162,7 +161,7 @@ const ArticleDetail = () => {
               </Badge>
               <div className="flex items-center text-gray-400 text-sm">
                 <Clock className="h-4 w-4 mr-1" />
-                {NewsService.formatTimeAgo(article.publishedAt)}
+                {NewsService.formatTimeAgo(article.published_at)}
               </div>
               <div className="flex items-center text-gray-400 text-sm">
                 <Eye className="h-4 w-4 mr-1" />

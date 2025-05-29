@@ -143,8 +143,8 @@ export class NewsService {
         content: article.content,
         category: article.category,
         source: article.source,
-        published_at: article.publishedAt,
-        image_url: article.imageUrl,
+        published_at: article.published_at,
+        image_url: article.image_url,
         url: article.url,
         views: article.views,
         is_trending: article.isTrending
@@ -165,8 +165,8 @@ export class NewsService {
         content: updatedArticle.content,
         category: updatedArticle.category,
         source: updatedArticle.source,
-        published_at: updatedArticle.publishedAt,
-        image_url: updatedArticle.imageUrl,
+        published_at: updatedArticle.published_at,
+        image_url: updatedArticle.image_url,
         url: updatedArticle.url,
         views: updatedArticle.views,
         is_trending: updatedArticle.isTrending
