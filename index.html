@@ -45,43 +45,13 @@
     <link rel="apple-touch-icon" href="/favicon.svg">
     <meta name="theme-color" content="#22C55E">
     <meta name="msapplication-TileColor" content="#22C55E">
-  </head>
 
-  <body>
-    <div id="root"></div>
-    
     <!-- Vapi Script -->
     <script>
       var vapiInstance = null;
       const assistant = "fb6889ad-fa78-4ddb-abe9-4693d0586173"; // Substitute with your assistant ID
       const apiKey = "c820f00f-a0db-42fd-b7d4-b7314ab7ad5c"; // Substitute with your Public key from Vapi Dashboard.
-      const buttonConfig = {
-        position: "bottom-right", // Position the button
-        offset: "40px", // Offset from the edge
-        width: "50px", // Button width
-        height: "50px", // Button height
-        idle: {
-          color: `rgb(34, 197, 94)`, // Green color to match your theme
-          type: "pill", // Button type
-          title: "Have a quick question?", // Tooltip
-          subtitle: "Talk with our AI", // Subtitle
-          icon: `https://unpkg.com/lucide@latest/dist/esm/icons/mic.js`, // Microphone icon
-        },
-        loading: {
-          color: `rgb(34, 197, 94)`,
-          type: "pill",
-          title: "Connecting...",
-          subtitle: "Please wait",
-          icon: `https://unpkg.com/lucide@latest/dist/esm/icons/loader-2.js`,
-        },
-        active: {
-          color: `rgb(34, 197, 94)`,
-          type: "pill", 
-          title: "Call is in progress...",
-          subtitle: "End the call.",
-          icon: `https://unpkg.com/lucide@latest/dist/esm/icons/phone.js`,
-        }
-      }; // Modify this as required
+      const buttonConfig = {}; // Modify this as required
 
       (function (d, t) {
         var g = document.createElement(t),
@@ -101,7 +71,10 @@
         };
       })(document, "script");
     </script>
-    
+  </head>
+
+  <body>
+    <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
