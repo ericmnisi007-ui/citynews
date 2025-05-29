@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, Eye, Share2 } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const ArticleDetail = () => {
@@ -38,6 +39,32 @@ const ArticleDetail = () => {
 
     loadArticle();
   }, [id, toast]);
+
+  // Set up real-time subscription for this specific article
+  useEffect(() => {
+    if (!id) return;
+
+    const channel = supabase
+      .channel(`article_${id}_changes`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'articles',
+          filter: `id=eq.${id}`
+        },
+        (payload) => {
+          console.log('Article real-time update:', payload);
+          setArticle(payload.new as NewsArticle);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id]);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -102,7 +129,7 @@ const ArticleDetail = () => {
 
         <article className="bg-slate-900/50 backdrop-blur-sm border border-green-400/20 rounded-xl overflow-hidden">
           <img
-            src={article.imageUrl}
+            src={article.image_url}
             alt={article.title}
             className="w-full h-64 md:h-96 object-cover"
           />
@@ -114,7 +141,7 @@ const ArticleDetail = () => {
               </Badge>
               <div className="flex items-center text-gray-400 text-sm">
                 <Clock className="h-4 w-4 mr-1" />
-                {NewsService.formatTimeAgo(article.publishedAt)}
+                {NewsService.formatTimeAgo(article.published_at)}
               </div>
               <div className="flex items-center text-gray-400 text-sm">
                 <Eye className="h-4 w-4 mr-1" />
@@ -131,14 +158,18 @@ const ArticleDetail = () => {
             </p>
 
             <div className="prose prose-invert max-w-none">
-              <p className="text-gray-300 leading-relaxed text-lg">
-                {article.content}
-              </p>
+              <div className="text-gray-300 leading-relaxed text-lg">
+                {article.content?.split('\n').map((paragraph, index) => (
+                  <p key={index} className="mb-4">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             </div>
 
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-700">
               <div className="text-sm text-gray-400">
-                Source: <span className="text-green-400">News Source</span>
+                Source: <span className="text-green-400">{article.source}</span>
               </div>
               <Button
                 onClick={handleShare}

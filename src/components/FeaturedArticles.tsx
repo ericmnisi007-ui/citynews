@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
+import { supabase } from "@/integrations/supabase/client";
 import ArticleGrid from "./ArticleGrid";
 import LoadingGrid from "./LoadingGrid";
 import confetti from 'canvas-confetti';
@@ -47,6 +48,47 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
       loadArticles();
     }
   }, [propArticles, showOnlyHeadlines, toast]);
+
+  // Set up real-time subscription for article changes
+  useEffect(() => {
+    if (propArticles) return; // Don't subscribe if using prop articles
+
+    const channel = supabase
+      .channel('articles_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'articles'
+        },
+        (payload) => {
+          console.log('Real-time update:', payload);
+          
+          // Reload articles when changes occur
+          const reloadArticles = async () => {
+            try {
+              let featuredArticles;
+              if (showOnlyHeadlines) {
+                featuredArticles = await NewsService.getHeadlinesOnly();
+              } else {
+                featuredArticles = await NewsService.getFeaturedArticles(3);
+              }
+              setArticles(featuredArticles);
+            } catch (error) {
+              console.error('Error reloading articles:', error);
+            }
+          };
+          
+          reloadArticles();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [propArticles, showOnlyHeadlines]);
 
   const handleReadMore = (article: NewsArticle) => {
     confetti({
