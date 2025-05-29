@@ -33,7 +33,7 @@ const NewspaperLoader = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         .newspaper-container {
           perspective: 1000px;
           width: 300px;
