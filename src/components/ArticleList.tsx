@@ -45,7 +45,7 @@ const ArticleList = ({ articles, onEdit, onDelete }: ArticleListProps) => {
                   <Badge className="bg-green-500 text-white">
                     {article.category}
                   </Badge>
-                  {article.is_trending && (
+                  {article.isTrending && (
                     <Badge className="bg-orange-500 text-white">
                       Trending
                     </Badge>
