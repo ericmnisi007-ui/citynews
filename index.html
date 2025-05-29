@@ -45,6 +45,32 @@
     <link rel="apple-touch-icon" href="/favicon.svg">
     <meta name="theme-color" content="#22C55E">
     <meta name="msapplication-TileColor" content="#22C55E">
+
+    <!-- Vapi Script -->
+    <script>
+      var vapiInstance = null;
+      const assistant = "fb6889ad-fa78-4ddb-abe9-4693d0586173"; // Substitute with your assistant ID
+      const apiKey = "c820f00f-a0db-42fd-b7d4-b7314ab7ad5c"; // Substitute with your Public key from Vapi Dashboard.
+      const buttonConfig = {}; // Modify this as required
+
+      (function (d, t) {
+        var g = document.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+        g.src =
+          "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+        g.defer = true;
+        g.async = true;
+        s.parentNode.insertBefore(g, s);
+
+        g.onload = function () {
+          vapiInstance = window.vapiSDK.run({
+            apiKey: apiKey, // mandatory
+            assistant: assistant, // mandatory
+            config: buttonConfig, // optional
+          });
+        };
+      })(document, "script");
+    </script>
   </head>
 
   <body>

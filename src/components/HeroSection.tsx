@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
@@ -6,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import confetti from 'canvas-confetti';
+import NewspaperLoader from "./NewspaperLoader";
 
 const HeroSection = () => {
   const [recentArticles, setRecentArticles] = useState<NewsArticle[]>([]);
@@ -96,28 +96,13 @@ const HeroSection = () => {
   const backgroundPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322C55E' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
 
   if (loading || recentArticles.length === 0) {
-    return (
-      <section className="relative overflow-hidden animate-fade-in">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 opacity-60">
-          <div 
-            className="absolute inset-0 opacity-50"
-            style={{ backgroundImage: `url("${backgroundPattern}")` }}
-          ></div>
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-          <div className="animate-pulse">
-            <div className="h-8 bg-slate-700/70 rounded mb-4 w-3/4"></div>
-            <div className="h-64 bg-slate-700/70 rounded mb-6"></div>
-          </div>
-        </div>
-      </section>
-    );
+    return <NewspaperLoader />;
   }
 
   const currentArticle = recentArticles[currentSlide];
 
   return (
-    <section className="relative overflow-hidden animate-fade-in">
+    <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 opacity-60">
         <div 
           className="absolute inset-0 opacity-50"
@@ -127,31 +112,31 @@ const HeroSection = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="text-center mb-8 animate-slide-up">
-          <div className="inline-flex items-center px-6 py-3 rounded-full bg-slate-900/70 backdrop-blur-md border border-green-400/30 animate-float">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-slate-900/70 backdrop-blur-md border border-green-400/30">
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-3"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
               <TrendingUp className="h-5 w-5 text-green-400 mr-2" />
               <span className="text-green-400 font-semibold">Latest News</span>
             </div>
           </div>
         </div>
 
-        <div className="relative animate-scale-in-center">
-          <div className="bg-slate-900/70 backdrop-blur-md border border-green-400/20 overflow-hidden hover-lift group glow-green rounded-xl">
+        <div className="relative">
+          <div className="bg-slate-900/70 backdrop-blur-md border border-green-400/20 overflow-hidden hover:shadow-xl transition-shadow duration-300 glow-green rounded-xl">
             <div className="relative h-[600px] md:h-[500px]">
               <div className="absolute inset-0 md:w-3/5">
                 <img
                   src={currentArticle.image_url}
                   alt={currentArticle.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                  className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60 md:to-slate-900/95"></div>
                 
                 {currentArticle.is_trending && (
-                  <div className="absolute top-6 left-6 animate-pulse z-10">
+                  <div className="absolute top-6 left-6 z-10">
                     <div className="bg-green-500 text-white font-bold px-4 py-2 text-sm border-0 rounded-full">
-                      <div className="w-2 h-2 bg-white rounded-full animate-ping mr-2 inline-block"></div>
+                      <div className="w-2 h-2 bg-white rounded-full mr-2 inline-block"></div>
                       TRENDING
                     </div>
                   </div>
@@ -174,7 +159,7 @@ const HeroSection = () => {
                     </div>
                   </div>
 
-                  <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight group-hover:text-green-400 transition-colors duration-300 drop-shadow-lg text-shadow-lg">
+                  <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight hover:text-green-400 transition-colors duration-300 drop-shadow-lg text-shadow-lg">
                     {currentArticle.title}
                   </h2>
 
@@ -185,7 +170,7 @@ const HeroSection = () => {
                   <div className="flex items-center gap-4 pt-4">
                     <button 
                       onClick={() => handleReadMore(currentArticle)}
-                      className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-lg hover-lift glow-green group/btn transition-all duration-300"
+                      className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 glow-green"
                     >
                       Read Full Story
                     </button>
