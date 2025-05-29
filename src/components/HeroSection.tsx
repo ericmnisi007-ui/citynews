@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
@@ -92,12 +93,12 @@ const HeroSection = () => {
     navigate(`/article/${article.id}`);
   };
 
-  const backgroundPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
+  const backgroundPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23dc2626' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
 
   if (loading || recentArticles.length === 0) {
     return (
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+      <section className="relative overflow-hidden animate-fade-in">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 opacity-60">
           <div 
             className="absolute inset-0 opacity-50"
             style={{ backgroundImage: `url("${backgroundPattern}")` }}
@@ -116,8 +117,8 @@ const HeroSection = () => {
   const currentArticle = recentArticles[currentSlide];
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+    <section className="relative overflow-hidden animate-fade-in">
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 opacity-60">
         <div 
           className="absolute inset-0 opacity-50"
           style={{ backgroundImage: `url("${backgroundPattern}")` }}
@@ -127,17 +128,17 @@ const HeroSection = () => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         <div className="text-center mb-8 animate-slide-up">
-          <div className="inline-flex items-center px-6 py-3 rounded-full bg-slate-900/70 backdrop-blur-md border border-green-400/30 animate-float">
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-slate-900/70 backdrop-blur-md border border-red-400/30 animate-float">
             <div className="flex items-center">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-3"></div>
-              <TrendingUp className="h-5 w-5 text-green-400 mr-2" />
-              <span className="text-green-400 font-semibold">Latest News</span>
+              <TrendingUp className="h-5 w-5 text-red-400 mr-2" />
+              <span className="text-red-400 font-semibold">Latest News</span>
             </div>
           </div>
         </div>
 
-        <div className="relative">
-          <div className="bg-slate-900/70 backdrop-blur-md border border-green-400/20 overflow-hidden hover-lift group animate-scale-in-center glow-green rounded-xl">
+        <div className="relative animate-scale-in-center">
+          <div className="bg-slate-900/70 backdrop-blur-md border border-red-400/20 overflow-hidden hover-lift group glow-red rounded-xl">
             <div className="relative h-[600px] md:h-[500px]">
               <div className="absolute inset-0 md:w-3/5">
                 <img
@@ -162,7 +163,7 @@ const HeroSection = () => {
                 
                 <div className="space-y-6 relative z-10">
                   <div className="flex items-center gap-6 text-sm">
-                    <div className="bg-green-500 text-white border-0 px-3 py-1 rounded-full">
+                    <div className="bg-red-500 text-white border-0 px-3 py-1 rounded-full">
                       {currentArticle.category}
                     </div>
                     <div className="flex items-center text-gray-300">
@@ -173,7 +174,7 @@ const HeroSection = () => {
                     </div>
                   </div>
 
-                  <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight group-hover:text-green-400 transition-colors duration-300 drop-shadow-lg text-shadow-lg">
+                  <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight group-hover:text-red-400 transition-colors duration-300 drop-shadow-lg text-shadow-lg">
                     {currentArticle.title}
                   </h2>
 
@@ -184,7 +185,7 @@ const HeroSection = () => {
                   <div className="flex items-center gap-4 pt-4">
                     <button 
                       onClick={() => handleReadMore(currentArticle)}
-                      className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-lg hover-lift glow-green group/btn transition-all duration-300"
+                      className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg hover-lift glow-red group/btn transition-all duration-300"
                     >
                       Read Full Story
                     </button>
@@ -201,7 +202,7 @@ const HeroSection = () => {
                 onClick={() => setCurrentSlide(index)}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === currentSlide 
-                    ? 'bg-green-400 w-8' 
+                    ? 'bg-red-400 w-8' 
                     : 'bg-slate-600 hover:bg-slate-500'
                 }`}
               />

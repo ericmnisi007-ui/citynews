@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Rss } from "lucide-react";
+import { Rss, CheckCircle } from "lucide-react";
 import { NewsService } from "@/services/newsService";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,6 +16,7 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
   const [selectedRssFeed, setSelectedRssFeed] = useState("");
   const [rssCategory, setRssCategory] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState("");
 
   const rssFeeds = [
     { label: "IOL Politics", url: "https://www.iol.co.za/news/politics/rss" },
@@ -36,20 +37,36 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
     }
 
     setIsLoading(true);
+    setProgress("Initializing RSS feed fetch...");
     
     try {
+      const feedName = rssFeeds.find(feed => feed.url === selectedRssFeed)?.label;
+      setProgress(`Fetching articles from ${feedName}...`);
+      
+      // Simulate progressive loading for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setProgress("Processing articles one by one...");
+      
       const articles = await NewsService.fetchRSSFeed(selectedRssFeed, rssCategory);
+      
+      setProgress(`Successfully processed ${articles.length} articles!`);
       
       toast({
         title: "RSS Feed Fetched Successfully",
-        description: `Added ${articles.length} articles to ${rssCategory} category from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`,
+        description: `Added ${articles.length} articles to ${rssCategory} category from ${feedName}`,
       });
 
-      setSelectedRssFeed("");
-      setRssCategory("");
-      onArticleSaved();
+      // Reset form after short delay
+      setTimeout(() => {
+        setSelectedRssFeed("");
+        setRssCategory("");
+        setProgress("");
+        onArticleSaved();
+      }, 2000);
+      
     } catch (error) {
       console.error('RSS fetch error:', error);
+      setProgress("Error occurred during fetch");
       toast({
         title: "Error",
         description: "Failed to fetch RSS feed. Please try again.",
@@ -61,10 +78,10 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
   };
 
   return (
-    <Card className="bg-slate-900/70 backdrop-blur-md border border-green-400/20">
+    <Card className="bg-slate-900/70 backdrop-blur-md border border-red-400/20 animate-slide-up">
       <CardHeader>
         <CardTitle className="text-white flex items-center">
-          <Rss className="h-5 w-5 mr-2 text-green-400" />
+          <Rss className="h-5 w-5 mr-2 text-red-400" />
           Fetch RSS Feed
         </CardTitle>
       </CardHeader>
@@ -74,11 +91,11 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
             <label className="block text-sm font-medium text-gray-300 mb-2">
               RSS Feed Source
             </label>
-            <Select value={selectedRssFeed} onValueChange={setSelectedRssFeed}>
-              <SelectTrigger className="bg-slate-800/50 border-green-400/30 text-white">
+            <Select value={selectedRssFeed} onValueChange={setSelectedRssFeed} disabled={isLoading}>
+              <SelectTrigger className="bg-slate-800/50 border-red-400/30 text-white">
                 <SelectValue placeholder="Select RSS feed source" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-green-400/30">
+              <SelectContent className="bg-slate-800 border-red-400/30">
                 {rssFeeds.map((feed) => (
                   <SelectItem 
                     key={feed.url} 
@@ -95,11 +112,11 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Category
             </label>
-            <Select value={rssCategory} onValueChange={setRssCategory}>
-              <SelectTrigger className="bg-slate-800/50 border-green-400/30 text-white">
+            <Select value={rssCategory} onValueChange={setRssCategory} disabled={isLoading}>
+              <SelectTrigger className="bg-slate-800/50 border-red-400/30 text-white">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-green-400/30">
+              <SelectContent className="bg-slate-800 border-red-400/30">
                 <SelectItem value="Headlines" className="text-white hover:bg-slate-700">Headlines</SelectItem>
                 <SelectItem value="Politics" className="text-white hover:bg-slate-700">Politics</SelectItem>
                 <SelectItem value="Business" className="text-white hover:bg-slate-700">Business</SelectItem>
@@ -110,13 +127,27 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
             </Select>
           </div>
         </div>
+        
+        {progress && (
+          <div className="mt-4 p-3 bg-slate-800/50 rounded-lg border border-red-400/20 animate-fade-in">
+            <div className="flex items-center text-red-400">
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-400 mr-2"></div>
+              ) : (
+                <CheckCircle className="h-4 w-4 mr-2" />
+              )}
+              <span className="text-sm">{progress}</span>
+            </div>
+          </div>
+        )}
+        
         <Button 
           onClick={handleFetchRSS}
           disabled={isLoading || !selectedRssFeed || !rssCategory}
-          className="mt-4 bg-green-500 hover:bg-green-600 text-white disabled:opacity-50"
+          className="mt-4 bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 transition-all duration-300"
         >
           <Rss className="h-4 w-4 mr-2" />
-          {isLoading ? 'Fetching Articles...' : 'Fetch RSS Articles'}
+          {isLoading ? 'Processing Articles...' : 'Fetch RSS Articles'}
         </Button>
       </CardContent>
     </Card>
