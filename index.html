@@ -53,8 +53,8 @@
       const buttonConfig = {
         position: "bottom-right",
         offset: "40px",
-        width: "80px",
-        height: "80px",
+        width: "120px",
+        height: "50px",
         idle: {
           color: {
             50: "#f0fdf4",
@@ -70,12 +70,9 @@
             950: "#052e16"
           },
           type: "pill",
-          title: "Ask Rob",
-          subtitle: "CNZA Journalist",
-          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="4" width="16" height="16" rx="2" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
-            <text x="12" y="14" text-anchor="middle" fill="#ffffff" font-size="8" font-weight="bold">CNZA</text>
-          </svg>`
+          title: "Ask Rob CNZA Journalist",
+          subtitle: "",
+          icon: ""
         },
         loading: {
           color: {
@@ -94,15 +91,7 @@
           type: "pill",
           title: "Connecting to Rob...",
           subtitle: "Please wait",
-          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="8" stroke="#22c55e" stroke-width="2" fill="none" stroke-dasharray="25.133" stroke-dashoffset="25.133" transform-origin="12 12">
-              <animateTransform attributeName="transform" type="rotate" dur="1s" values="0 12 12;360 12 12" repeatCount="indefinite"/>
-              <animate attributeName="stroke-dasharray" dur="1.5s" values="0 25.133;12.566 12.566;0 25.133" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="12" cy="12" r="3" fill="#22c55e" opacity="0.5">
-              <animate attributeName="opacity" dur="1s" values="0.5;1;0.5" repeatCount="indefinite"/>
-            </circle>
-          </svg>`
+          icon: ""
         },
         active: {
           color: {
@@ -121,18 +110,7 @@
           type: "pill",
           title: "Rob is listening...",
           subtitle: "Speak now",
-          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="8" fill="#22c55e" opacity="0.8">
-              <animate attributeName="r" dur="1.5s" values="6;8;6" repeatCount="indefinite"/>
-              <animate attributeName="opacity" dur="1.5s" values="0.8;0.3;0.8" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="12" cy="12" r="5" fill="#34d399" opacity="0.6">
-              <animate attributeName="r" dur="1.2s" values="4;5;4" repeatCount="indefinite"/>
-              <animate attributeName="opacity" dur="1.2s" values="0.6;0.2;0.6" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="12" cy="12" r="3" fill="#ffffff"/>
-            <path d="M10 9v6l4-3z" fill="#22c55e"/>
-          </svg>`
+          icon: ""
         }
       };
 
@@ -209,8 +187,14 @@
         50% { transform: translateY(-5px); }
       }
 
-      /* Make sure Vapi button text is readable */
-      [data-vapi-button] * {
+      /* Make sure Vapi button has green background and white text */
+      [data-vapi-button], .vapi-btn, [class*="vapi"] {
+        background-color: #22c55e !important;
+        color: white !important;
+        border: none !important;
+      }
+      
+      [data-vapi-button] *, .vapi-btn *, [class*="vapi"] * {
         color: white !important;
       }
     </style>
