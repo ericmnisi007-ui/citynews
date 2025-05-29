@@ -54,8 +54,8 @@
       const buttonConfig = {
         position: "bottom-right",
         offset: "40px",
-        width: "60px",
-        height: "60px",
+        width: "80px",
+        height: "80px",
         idle: {
           color: {
             50: "#f0fdf4",
@@ -71,9 +71,19 @@
             950: "#052e16"
           },
           type: "pill",
-          title: "Ask AI Assistant",
-          subtitle: "Get news insights",
-          icon: `https://unpkg.com/lucide@latest/dist/esm/icons/phone.js`
+          title: "Ask Rob",
+          subtitle: "Your AI News Assistant",
+          icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(2,2)">
+              <rect x="2" y="4" width="24" height="18" rx="2" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+              <rect x="1" y="3" width="24" height="18" rx="2" fill="#34d399" stroke="#16a34a" stroke-width="1"/>
+              <rect x="0" y="2" width="24" height="18" rx="2" fill="#4ade80" stroke="#16a34a" stroke-width="1"/>
+              <line x1="4" y1="6" x2="20" y2="6" stroke="#16a34a" stroke-width="1.5"/>
+              <line x1="4" y1="9" x2="16" y2="9" stroke="#16a34a" stroke-width="1"/>
+              <line x1="4" y1="12" x2="18" y2="12" stroke="#16a34a" stroke-width="1"/>
+              <line x1="4" y1="15" x2="14" y2="15" stroke="#16a34a" stroke-width="1"/>
+            </g>
+          </svg>`
         },
         loading: {
           color: {
@@ -90,9 +100,16 @@
             950: "#052e16"
           },
           type: "pill",
-          title: "Connecting...",
+          title: "Connecting to Rob...",
           subtitle: "Please wait",
-          icon: `https://unpkg.com/lucide@latest/dist/esm/icons/loader-2.js`
+          icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(2,2)" class="animate-spin">
+              <circle cx="12" cy="12" r="10" stroke="#22c55e" stroke-width="2" fill="none" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+              </circle>
+            </g>
+          </svg>`
         },
         active: {
           color: {
@@ -109,11 +126,18 @@
             950: "#052e16"
           },
           type: "pill",
-          title: "Call in progress...",
-          subtitle: "AI is listening",
-          icon: `https://unpkg.com/lucide@latest/dist/esm/icons/phone-call.js`
+          title: "Rob is listening...",
+          subtitle: "Speak now",
+          icon: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(4,4)">
+              <circle cx="12" cy="12" r="8" fill="#22c55e" class="animate-pulse"/>
+              <circle cx="12" cy="12" r="6" fill="#34d399" class="animate-pulse" style="animation-delay: 0.2s"/>
+              <circle cx="12" cy="12" r="4" fill="#4ade80" class="animate-pulse" style="animation-delay: 0.4s"/>
+              <path d="M12 8v8l4-4z" fill="white"/>
+            </g>
+          </svg>`
         }
-      }; // Modify this as required
+      };
 
       (function (d, t) {
         var g = document.createElement(t),
@@ -131,17 +155,68 @@
             config: buttonConfig, // optional
           });
           
-          // Ensure the Vapi button has the highest z-index
+          // Enhanced styling and animation for Vapi button
           setTimeout(() => {
             const vapiButton = document.querySelector('[data-vapi-button]') || document.querySelector('.vapi-btn') || document.querySelector('[class*="vapi"]');
             if (vapiButton) {
               vapiButton.style.zIndex = '99999';
               vapiButton.style.position = 'fixed';
+              vapiButton.style.boxShadow = '0 10px 25px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.2)';
+              vapiButton.style.transition = 'all 0.3s ease';
+              vapiButton.style.cursor = 'pointer';
+              
+              // Add hover effect
+              vapiButton.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.boxShadow = '0 15px 35px rgba(34, 197, 94, 0.4), 0 0 30px rgba(34, 197, 94, 0.3)';
+              });
+              
+              vapiButton.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = '0 10px 25px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.2)';
+              });
+              
+              // Add phone ringing animation when clicked
+              vapiButton.addEventListener('click', function() {
+                this.style.animation = 'phoneRing 0.6s ease-in-out';
+                setTimeout(() => {
+                  this.style.animation = '';
+                }, 600);
+              });
+              
+              // Add floating animation
+              vapiButton.style.animation = 'vapiFloat 3s ease-in-out infinite';
             }
           }, 1000);
         };
       })(document, "script");
     </script>
+
+    <!-- Custom CSS for Vapi button animations -->
+    <style>
+      @keyframes phoneRing {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        10% { transform: rotate(-10deg) scale(1.1); }
+        20% { transform: rotate(10deg) scale(1.1); }
+        30% { transform: rotate(-10deg) scale(1.1); }
+        40% { transform: rotate(10deg) scale(1.1); }
+        50% { transform: rotate(-5deg) scale(1.05); }
+        60% { transform: rotate(5deg) scale(1.05); }
+        70% { transform: rotate(-5deg) scale(1.05); }
+        80% { transform: rotate(5deg) scale(1.05); }
+        90% { transform: rotate(0deg) scale(1); }
+      }
+
+      @keyframes vapiFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+      }
+
+      /* Make sure Vapi button text is readable */
+      [data-vapi-button] * {
+        color: white !important;
+      }
+    </style>
   </head>
 
   <body>
