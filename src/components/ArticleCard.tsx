@@ -94,7 +94,7 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
     >
       <div className="relative overflow-hidden">
         <img
-          src={article.imageUrl}
+          src={article.image_url}
           alt={article.title}
           className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700"
         />
@@ -103,7 +103,7 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
           <Badge className={`bg-gradient-to-r ${getCategoryColor(article.category)} text-white border-0`}>
             {article.category}
           </Badge>
-          {article.isTrending && (
+          {article.is_trending && (
             <Badge className="bg-gradient-to-r from-green-400 to-emerald-500 text-black border-0 animate-pulse">
               <TrendingUp className="h-3 w-3 mr-1" />
               Trending
@@ -135,7 +135,7 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1 text-gray-400">
               <Clock className="h-3 w-3" />
-              {formatTimeAgo(article.publishedAt)}
+              {formatTimeAgo(article.published_at)}
             </div>
             <div className="flex items-center gap-1 text-gray-400">
               <Eye className="h-3 w-3" />
