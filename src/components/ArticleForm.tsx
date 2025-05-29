@@ -47,7 +47,7 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
     try {
       const publishedDate = customDate ? new Date(customDate).toISOString() : (editingArticle?.published_at || new Date().toISOString());
       
-      const articleData: Omit<NewsArticle, 'id' | 'created_at' | 'updated_at'> = {
+      const articleData: Omit<NewsArticle, 'id'> = {
         title: formData.title,
         description: formData.description,
         content: formData.content,
@@ -73,6 +73,7 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
 
       onArticleSaved();
     } catch (error) {
+      console.error('Error saving article:', error);
       toast({
         title: "Error",
         description: "Failed to save article",
