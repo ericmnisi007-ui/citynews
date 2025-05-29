@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Rss } from "lucide-react";
-import { NewsService, NewsArticle } from "@/services/newsService";
+import { NewsService } from "@/services/newsService";
 import { useToast } from "@/hooks/use-toast";
 
 interface RSSFeedFormProps {
@@ -15,6 +15,7 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
   const { toast } = useToast();
   const [selectedRssFeed, setSelectedRssFeed] = useState("");
   const [rssCategory, setRssCategory] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const rssFeeds = [
     { label: "IOL Politics", url: "https://www.iol.co.za/news/politics/rss" },
@@ -34,55 +35,28 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
       return;
     }
 
+    setIsLoading(true);
+    
     try {
-      // Simulate RSS fetch - in real implementation, you'd use a proper RSS parser
-      const mockRSSArticles = [
-        {
-          title: `RSS Article from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`,
-          description: "Description from RSS feed",
-          content: "Full content from RSS feed...",
-          imageUrl: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-        },
-        {
-          title: `Another RSS Article from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`, 
-          description: "Another description from RSS feed",
-          content: "Another full content from RSS feed...",
-          imageUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-        }
-      ];
-
-      for (const rssArticle of mockRSSArticles) {
-        const articleData: NewsArticle = {
-          id: Date.now().toString() + Math.random().toString(36),
-          title: rssArticle.title,
-          description: rssArticle.description,
-          content: rssArticle.content,
-          category: rssCategory,
-          source: new URL(selectedRssFeed).hostname,
-          publishedAt: new Date().toISOString(),
-          imageUrl: rssArticle.imageUrl,
-          url: `#/article/${Date.now().toString()}`,
-          views: 0,
-          isTrending: false
-        };
-
-        await NewsService.addArticle(articleData);
-      }
-
+      const articles = await NewsService.fetchRSSFeed(selectedRssFeed, rssCategory);
+      
       toast({
-        title: "RSS Feed Fetched",
-        description: `Added ${mockRSSArticles.length} articles to ${rssCategory} category from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`,
+        title: "RSS Feed Fetched Successfully",
+        description: `Added ${articles.length} articles to ${rssCategory} category from ${rssFeeds.find(feed => feed.url === selectedRssFeed)?.label}`,
       });
 
       setSelectedRssFeed("");
       setRssCategory("");
       onArticleSaved();
     } catch (error) {
+      console.error('RSS fetch error:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch RSS feed",
+        description: "Failed to fetch RSS feed. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -138,10 +112,11 @@ const RSSFeedForm = ({ onArticleSaved }: RSSFeedFormProps) => {
         </div>
         <Button 
           onClick={handleFetchRSS}
-          className="mt-4 bg-green-500 hover:bg-green-600 text-white"
+          disabled={isLoading || !selectedRssFeed || !rssCategory}
+          className="mt-4 bg-green-500 hover:bg-green-600 text-white disabled:opacity-50"
         >
           <Rss className="h-4 w-4 mr-2" />
-          Fetch RSS Articles
+          {isLoading ? 'Fetching Articles...' : 'Fetch RSS Articles'}
         </Button>
       </CardContent>
     </Card>
