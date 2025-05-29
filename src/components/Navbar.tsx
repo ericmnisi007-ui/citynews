@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Globe, Zap, Settings } from "lucide-react";
+import { Menu, Search, Globe, Zap } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -32,19 +32,27 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const handleAdminClick = () => {
-    navigate('/admin');
+  const handleAdminAccess = () => {
+    const adminKey = prompt("Enter admin access key:");
+    if (adminKey === "admin123") {
+      navigate('/admin');
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "Invalid admin key",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
       isScrolled 
-        ? 'glass-effect shadow-2xl' 
+        ? 'bg-slate-900/70 backdrop-blur-md shadow-2xl' 
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
           <div className="flex items-center space-x-4 animate-slide-in-left cursor-pointer" onClick={handleLogoClick}>
             <div className="relative">
               <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-xl glow-green">
@@ -62,46 +70,41 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
             {categories.map((category, index) => (
               <Button
                 key={category}
                 variant="ghost"
                 onClick={() => handleCategoryClick(category)}
-                className={`text-gray-300 hover:text-green-400 hover:bg-green-400/10 transition-all duration-300 border border-transparent hover:border-green-400/30 rounded-xl animate-slide-up stagger-${index + 1}`}
+                className={`text-gray-300 hover:text-white hover:bg-green-500 transition-all duration-300 border border-transparent hover:border-green-400/30 rounded-xl animate-slide-up stagger-${index + 1}`}
               >
                 {category}
               </Button>
             ))}
           </div>
 
-          {/* Search, Admin and Mobile Menu */}
           <div className="flex items-center space-x-4 animate-slide-in-right">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={handleSearchClick}
-              className="hidden sm:flex bg-slate-900/70 backdrop-blur-md border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 glow-green"
+              className="hidden sm:flex bg-green-500 hover:bg-green-600 border-green-500 text-white hover:text-white"
             >
               <Search className="h-4 w-4 mr-2" />
               Search
             </Button>
 
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleAdminClick}
-              className="hidden sm:flex bg-slate-900/70 backdrop-blur-md border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300"
+            <div 
+              onDoubleClick={handleAdminAccess}
+              className="hidden sm:block w-8 h-8 cursor-pointer opacity-0 hover:opacity-20 transition-opacity"
+              title="Double-click for admin access"
             >
-              <Settings className="h-4 w-4 mr-2" />
-              Admin
-            </Button>
+              <div className="w-full h-full bg-slate-700 rounded"></div>
+            </div>
             
-            {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="md:hidden bg-slate-900/70 backdrop-blur-md border-green-400/30 text-green-400 hover:bg-green-400/10">
+                <Button variant="outline" size="sm" className="md:hidden bg-green-500 hover:bg-green-600 border-green-500 text-white hover:text-white">
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
@@ -112,19 +115,17 @@ const Navbar = () => {
                       key={category} 
                       variant="ghost" 
                       onClick={() => handleCategoryClick(category)}
-                      className={`justify-start text-gray-300 hover:text-green-400 hover:bg-green-400/10 animate-slide-in-right stagger-${index + 1}`}
+                      className={`justify-start text-gray-300 hover:text-white hover:bg-green-500 animate-slide-in-right stagger-${index + 1}`}
                     >
                       {category}
                     </Button>
                   ))}
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleAdminClick}
-                    className="justify-start text-gray-300 hover:text-green-400 hover:bg-green-400/10"
+                  <div 
+                    onDoubleClick={handleAdminAccess}
+                    className="mt-4 p-2 text-center text-xs text-gray-500 cursor-pointer"
                   >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Admin
-                  </Button>
+                    Double-tap for admin
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

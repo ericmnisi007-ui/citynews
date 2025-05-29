@@ -90,7 +90,7 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
             size="sm"
             variant="ghost"
             onClick={handleShare}
-            className="bg-black/50 text-white hover:bg-black/70 backdrop-blur-sm"
+            className="bg-slate-900/70 text-white hover:bg-slate-800/70 backdrop-blur-sm"
           >
             <Share2 className="h-3 w-3" />
           </Button>
@@ -130,7 +130,7 @@ const ArticleCard = ({ article, index, onReadMore }: ArticleCardProps) => {
               e.stopPropagation();
               onReadMore(article);
             }}
-            className="text-green-400 hover:text-green-300 hover:bg-green-400/10"
+            className="bg-green-500 hover:bg-green-600 text-white hover:text-white"
           >
             Read More
             <ExternalLink className="h-3 w-3 ml-1" />

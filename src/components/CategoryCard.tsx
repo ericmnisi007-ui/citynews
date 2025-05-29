@@ -41,7 +41,7 @@ const CategoryCard = ({ category, count, index, onCategoryClick }: CategoryCardP
         <Button 
           variant="ghost" 
           onClick={() => onCategoryClick(category.name)}
-          className="w-full bg-slate-800/50 border border-green-400/30 text-green-400 hover:bg-green-400/10 hover:text-green-300 group-hover:scale-105 transition-all duration-300"
+          className="w-full bg-green-500 hover:bg-green-600 text-white hover:text-white group-hover:scale-105 transition-all duration-300"
           disabled={count === 0}
         >
           {count === 0 ? 'No Articles' : 'View Articles'}

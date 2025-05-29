@@ -1,27 +1,85 @@
 
 import React, { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
-import HeroStoryCard from "./HeroStoryCard";
-import StoryNavigationDots from "./StoryNavigationDots";
-import { heroStories } from "@/data/heroData";
+import { NewsService, NewsArticle } from "@/services/newsService";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import confetti from 'canvas-confetti';
 
 const HeroSection = () => {
+  const [recentArticles, setRecentArticles] = useState<NewsArticle[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroStories.length);
-    }, 5000);
-    return () => clearInterval(timer);
+    const loadRecentArticles = async () => {
+      try {
+        const articles = await NewsService.getAllArticles();
+        const sortedArticles = articles.sort((a, b) => 
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+        ).slice(0, 5);
+        setRecentArticles(sortedArticles);
+      } catch (error) {
+        console.error('Error loading recent articles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRecentArticles();
   }, []);
 
-  const currentStory = heroStories[currentSlide];
+  useEffect(() => {
+    if (recentArticles.length > 0) {
+      const timer = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % recentArticles.length);
+      }, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [recentArticles.length]);
+
+  const handleReadMore = (article: NewsArticle) => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+    
+    NewsService.incrementViews(article.id);
+    toast({
+      title: "Opening Article",
+      description: `Reading: ${article.title}`,
+    });
+    navigate(`/article/${article.id}`);
+  };
 
   const backgroundPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
 
+  if (loading || recentArticles.length === 0) {
+    return (
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+          <div 
+            className="absolute inset-0 opacity-50"
+            style={{ backgroundImage: `url("${backgroundPattern}")` }}
+          ></div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
+          <div className="animate-pulse">
+            <div className="h-8 bg-slate-700/70 rounded mb-4 w-3/4"></div>
+            <div className="h-64 bg-slate-700/70 rounded mb-6"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const currentArticle = recentArticles[currentSlide];
+
   return (
     <section className="relative overflow-hidden">
-      {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
         <div 
           className="absolute inset-0 opacity-50"
@@ -31,25 +89,91 @@ const HeroSection = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        {/* Live News Indicator */}
         <div className="text-center mb-8 animate-slide-up">
-          <div className="inline-flex items-center px-6 py-3 rounded-full glass-effect border border-green-400/30 animate-float">
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-slate-900/70 backdrop-blur-md border border-green-400/30 animate-float">
             <div className="flex items-center">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-3"></div>
               <TrendingUp className="h-5 w-5 text-green-400 mr-2" />
-              <span className="text-green-400 font-semibold">Live News Feed</span>
+              <span className="text-green-400 font-semibold">Latest News</span>
             </div>
           </div>
         </div>
 
-        {/* Dynamic Hero Story Carousel */}
         <div className="relative">
-          <HeroStoryCard story={currentStory} />
-          <StoryNavigationDots 
-            totalStories={heroStories.length}
-            currentSlide={currentSlide}
-            onSlideChange={setCurrentSlide}
-          />
+          <div className="bg-slate-900/70 backdrop-blur-md border border-green-400/20 overflow-hidden hover-lift group animate-scale-in-center glow-green rounded-xl">
+            <div className="relative h-[600px] md:h-[500px]">
+              <div className="absolute inset-0 md:w-3/5">
+                <img
+                  src={currentArticle.imageUrl}
+                  alt={currentArticle.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60 md:to-slate-900/95"></div>
+                
+                {currentArticle.isTrending && (
+                  <div className="absolute top-6 left-6 animate-pulse z-10">
+                    <div className="bg-red-500 text-white font-bold px-4 py-2 text-sm border-0 rounded-full">
+                      <div className="w-2 h-2 bg-white rounded-full animate-ping mr-2 inline-block"></div>
+                      TRENDING
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="absolute inset-0 md:left-3/5 p-8 md:p-12 flex flex-col justify-center">
+                <div className="absolute inset-0 bg-slate-900/70 md:bg-transparent"></div>
+                
+                <div className="space-y-6 relative z-10">
+                  <div className="flex items-center gap-6 text-sm">
+                    <div className="bg-green-500 text-white border-0 px-3 py-1 rounded-full">
+                      {currentArticle.category}
+                    </div>
+                    <div className="flex items-center text-gray-300">
+                      {NewsService.formatTimeAgo(currentArticle.publishedAt)}
+                    </div>
+                    <div className="flex items-center text-gray-300">
+                      {NewsService.formatViews(currentArticle.views)} views
+                    </div>
+                  </div>
+
+                  <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight group-hover:text-green-400 transition-colors duration-300 drop-shadow-lg text-shadow-lg">
+                    {currentArticle.title}
+                  </h2>
+
+                  <p className="text-lg text-gray-200 leading-relaxed max-w-xl drop-shadow-md">
+                    {currentArticle.description}
+                  </p>
+
+                  <div className="flex items-center gap-4 pt-4">
+                    <button 
+                      onClick={() => handleReadMore(currentArticle)}
+                      className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-lg hover-lift glow-green group/btn transition-all duration-300"
+                    >
+                      Read Full Story
+                    </button>
+                    
+                    <div className="text-sm font-medium text-green-400 bg-green-400/20 px-4 py-2 rounded-full border border-green-400/40">
+                      {currentArticle.source}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center mt-6 space-x-2">
+            {recentArticles.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentSlide 
+                    ? 'bg-green-400 w-8' 
+                    : 'bg-slate-600 hover:bg-slate-500'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
