@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import confetti from 'canvas-confetti';
@@ -30,39 +29,6 @@ const HeroSection = () => {
     };
 
     loadRecentArticles();
-  }, []);
-
-  // Set up real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('hero-articles')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'articles'
-        },
-        async (payload) => {
-          console.log('Hero articles updated:', payload);
-          
-          // Reload recent articles when changes occur
-          try {
-            const articles = await NewsService.getAllArticles();
-            const sortedArticles = articles.sort((a, b) => 
-              new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-            ).slice(0, 5);
-            setRecentArticles(sortedArticles);
-          } catch (error) {
-            console.error('Error reloading hero articles:', error);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   useEffect(() => {

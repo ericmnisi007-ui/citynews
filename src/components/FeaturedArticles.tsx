@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
-import { supabase } from "@/integrations/supabase/client";
 import ArticleGrid from "./ArticleGrid";
 import LoadingGrid from "./LoadingGrid";
 import confetti from 'canvas-confetti';
@@ -47,57 +46,6 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
 
       loadArticles();
     }
-  }, [propArticles, showOnlyHeadlines, toast]);
-
-  // Set up real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('articles-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'articles'
-        },
-        async (payload) => {
-          console.log('Real-time update:', payload);
-          
-          // Reload articles when changes occur
-          try {
-            let updatedArticles;
-            if (propArticles) {
-              // If we're showing filtered articles, don't reload
-              return;
-            } else if (showOnlyHeadlines) {
-              updatedArticles = await NewsService.getHeadlinesOnly();
-            } else {
-              updatedArticles = await NewsService.getFeaturedArticles(3);
-            }
-            setArticles(updatedArticles);
-            
-            // Show toast notification for real-time updates
-            if (payload.eventType === 'INSERT') {
-              toast({
-                title: "New Article Published",
-                description: "A new article has been added to the site.",
-              });
-            } else if (payload.eventType === 'UPDATE') {
-              toast({
-                title: "Article Updated",
-                description: "An article has been updated.",
-              });
-            }
-          } catch (error) {
-            console.error('Error reloading articles after real-time update:', error);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [propArticles, showOnlyHeadlines, toast]);
 
   const handleReadMore = (article: NewsArticle) => {
