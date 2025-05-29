@@ -19,7 +19,7 @@ const HeroSection = () => {
       try {
         const articles = await NewsService.getAllArticles();
         const sortedArticles = articles.sort((a, b) => 
-          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+          new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
         ).slice(0, 5);
         setRecentArticles(sortedArticles);
       } catch (error) {
@@ -50,7 +50,7 @@ const HeroSection = () => {
           try {
             const articles = await NewsService.getAllArticles();
             const sortedArticles = articles.sort((a, b) => 
-              new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+              new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
             ).slice(0, 5);
             setRecentArticles(sortedArticles);
           } catch (error) {
@@ -138,13 +138,13 @@ const HeroSection = () => {
             <div className="relative h-[600px] md:h-[500px]">
               <div className="absolute inset-0 md:w-3/5">
                 <img
-                  src={currentArticle.imageUrl}
+                  src={currentArticle.image_url}
                   alt={currentArticle.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60 md:to-slate-900/95"></div>
                 
-                {currentArticle.isTrending && (
+                {currentArticle.is_trending && (
                   <div className="absolute top-6 left-6 animate-pulse z-10">
                     <div className="bg-red-500 text-white font-bold px-4 py-2 text-sm border-0 rounded-full">
                       <div className="w-2 h-2 bg-white rounded-full animate-ping mr-2 inline-block"></div>
@@ -163,7 +163,7 @@ const HeroSection = () => {
                       {currentArticle.category}
                     </div>
                     <div className="flex items-center text-gray-300">
-                      {NewsService.formatTimeAgo(currentArticle.publishedAt)}
+                      {NewsService.formatTimeAgo(currentArticle.published_at)}
                     </div>
                     <div className="flex items-center text-gray-300">
                       {NewsService.formatViews(currentArticle.views)} views

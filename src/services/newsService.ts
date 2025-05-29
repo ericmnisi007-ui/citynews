@@ -33,11 +33,11 @@ export class NewsService {
       content: article.content || '',
       category: article.category,
       source: article.source || 'Admin',
-      publishedAt: article.published_at,
-      imageUrl: article.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      published_at: article.published_at,
+      image_url: article.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       url: article.url || `#/article/${article.id}`,
       views: article.views || 0,
-      isTrending: article.is_trending || false
+      is_trending: article.is_trending || false
     })) || [];
   }
 
@@ -60,11 +60,11 @@ export class NewsService {
       content: article.content || '',
       category: article.category,
       source: article.source || 'Admin',
-      publishedAt: article.published_at,
-      imageUrl: article.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      published_at: article.published_at,
+      image_url: article.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       url: article.url || `#/article/${article.id}`,
       views: article.views || 0,
-      isTrending: article.is_trending || false
+      is_trending: article.is_trending || false
     })) || [];
   }
 
@@ -91,11 +91,11 @@ export class NewsService {
       content: article.content || '',
       category: article.category,
       source: article.source || 'Admin',
-      publishedAt: article.published_at,
-      imageUrl: article.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      published_at: article.published_at,
+      image_url: article.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       url: article.url || `#/article/${article.id}`,
       views: article.views || 0,
-      isTrending: article.is_trending || false
+      is_trending: article.is_trending || false
     })) || [];
   }
 
@@ -120,11 +120,11 @@ export class NewsService {
       content: data.content || '',
       category: data.category,
       source: data.source || 'Admin',
-      publishedAt: data.published_at,
-      imageUrl: data.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+      published_at: data.published_at,
+      image_url: data.image_url || "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
       url: data.url || `#/article/${data.id}`,
       views: data.views || 0,
-      isTrending: data.is_trending || false
+      is_trending: data.is_trending || false
     };
   }
 
@@ -147,7 +147,7 @@ export class NewsService {
         image_url: article.image_url,
         url: article.url,
         views: article.views,
-        is_trending: article.isTrending
+        is_trending: article.is_trending
       }]);
 
     if (error) {
@@ -169,7 +169,7 @@ export class NewsService {
         image_url: updatedArticle.image_url,
         url: updatedArticle.url,
         views: updatedArticle.views,
-        is_trending: updatedArticle.isTrending
+        is_trending: updatedArticle.is_trending
       })
       .eq('id', updatedArticle.id);
 
@@ -192,26 +192,18 @@ export class NewsService {
   }
 
   static async incrementViews(id: string): Promise<void> {
-    const { error } = await supabase.rpc('increment', {
-      table_name: 'articles',
-      row_id: id,
-      column_name: 'views'
-    });
+    // Get current views and increment manually since increment function doesn't exist
+    const { data } = await supabase
+      .from('articles')
+      .select('views')
+      .eq('id', id)
+      .single();
 
-    if (error) {
-      // Fallback: get current views and increment manually
-      const { data } = await supabase
+    if (data) {
+      await supabase
         .from('articles')
-        .select('views')
-        .eq('id', id)
-        .single();
-
-      if (data) {
-        await supabase
-          .from('articles')
-          .update({ views: (data.views || 0) + 1 })
-          .eq('id', id);
-      }
+        .update({ views: (data.views || 0) + 1 })
+        .eq('id', id);
     }
   }
 
@@ -229,11 +221,11 @@ export class NewsService {
       content: item.content,
       category: category,
       source: new URL(feedUrl).hostname,
-      publishedAt: new Date().toISOString(),
-      imageUrl: item.imageUrl,
+      published_at: new Date().toISOString(),
+      image_url: item.imageUrl,
       url: `#/article/rss-${Date.now()}-${index}`,
       views: 0,
-      isTrending: false
+      is_trending: false
     }));
 
     // Add articles to Supabase
