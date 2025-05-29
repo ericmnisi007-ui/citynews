@@ -1,5 +1,31 @@
 
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="4" fill="#22C55E"/>
-  <text x="16" y="20" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">CNZA</text>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0F172A"/>
+  
+  <!-- Green accent background -->
+  <rect x="0" y="0" width="1200" height="630" fill="url(#gradient)" opacity="0.1"/>
+  
+  <!-- Main logo circle -->
+  <circle cx="400" cy="315" r="120" fill="#22C55E"/>
+  
+  <!-- CNZA text in circle -->
+  <text x="400" y="335" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">CNZA</text>
+  
+  <!-- City News ZA text -->
+  <text x="580" y="290" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white">City News ZA</text>
+  
+  <!-- Tagline -->
+  <text x="580" y="340" font-family="Arial, sans-serif" font-size="32" fill="#22C55E">Independent &amp; Authentic</text>
+  
+  <!-- South African News -->
+  <text x="580" y="380" font-family="Arial, sans-serif" font-size="24" fill="#94A3B8">South African News</text>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22C55E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
 </svg>
