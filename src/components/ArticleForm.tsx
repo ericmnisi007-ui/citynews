@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { NewsService, NewsArticle } from "@/services/newsService";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +29,36 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
   const handleImageUpload = (imageUrl: string) => {
     setUploadedImage(imageUrl);
     setFormData(prev => ({ ...prev, imageUrl }));
+  };
+
+  const sendWebhook = async (articleData: any) => {
+    try {
+      const webhookData = {
+        title: articleData.title,
+        category: articleData.category,
+        source: "City News ZA",
+        imageUrl: articleData.image_url || "",
+        publishedDate: articleData.published_at,
+        description: articleData.description,
+        content: articleData.content
+      };
+
+      const response = await fetch('https://hook.eu2.make.com/nb3mktnp71d7349urtr9784607xvvufg', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookData)
+      });
+
+      if (!response.ok) {
+        console.warn('Webhook request failed:', response.status, response.statusText);
+      } else {
+        console.log('Webhook sent successfully');
+      }
+    } catch (error) {
+      console.error('Error sending webhook:', error);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,6 +93,8 @@ const ArticleForm = ({ editingArticle, onArticleSaved, onCancel }: ArticleFormPr
         await NewsService.updateArticle({ ...articleData, id: editingArticle.id } as NewsArticle);
       } else {
         await NewsService.addArticle(articleData);
+        // Send webhook only for new articles
+        await sendWebhook(articleData);
       }
       
       toast({
