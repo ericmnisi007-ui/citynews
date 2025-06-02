@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 interface NewsArticle {
@@ -79,18 +78,36 @@ export class NewsService {
   }
 
   static async getArticleById(id: string): Promise<NewsArticle | null> {
-    const { data, error } = await supabase
-      .from('articles')
-      .select('*')
-      .eq('id', id)
-      .single();
+    console.log('Fetching article with ID:', id);
     
-    if (error) {
-      console.error('Error fetching article by id:', error);
+    if (!id || id.trim() === '') {
+      console.error('Invalid article ID provided');
       return null;
     }
-    
-    return data;
+
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle(); // Use maybeSingle instead of single to handle no results gracefully
+      
+      if (error) {
+        console.error('Error fetching article by id:', error);
+        return null;
+      }
+      
+      if (!data) {
+        console.log('No article found with ID:', id);
+        return null;
+      }
+      
+      console.log('Article fetched successfully:', data.title);
+      return data;
+    } catch (error) {
+      console.error('Unexpected error fetching article:', error);
+      return null;
+    }
   }
 
   static async getFeaturedArticles(limit: number = 6): Promise<NewsArticle[]> {
@@ -166,10 +183,13 @@ export class NewsService {
   }
 
   static async incrementViews(id: string): Promise<void> {
+    console.log('Incrementing views for article:', id);
     const { error } = await supabase.rpc('increment_views', { article_id: id });
     
     if (error) {
       console.error('Error incrementing views:', error);
+    } else {
+      console.log('Views incremented successfully for article:', id);
     }
   }
 

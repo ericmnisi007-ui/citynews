@@ -68,7 +68,8 @@ export const useMetaTags = ({
     };
 
     if (title) {
-      updateMetaTag('title', `${title} | City News ZA`);
+      const pageTitle = `${title} | City News ZA`;
+      updateMetaTag('title', pageTitle);
       updateMetaTag('meta[property="og:title"]', title);
       updateMetaTag('meta[name="twitter:title"]', title);
     }
@@ -86,6 +87,11 @@ export const useMetaTags = ({
       const imageUrl = image.startsWith('http') ? image : `https://cnza.lovable.app${image}`;
       updateMetaTag('meta[property="og:image"]', imageUrl);
       updateMetaTag('meta[name="twitter:image"]', imageUrl);
+      
+      // Add additional image meta tags for better social media support
+      updateMetaTag('meta[property="og:image:width"]', '1200');
+      updateMetaTag('meta[property="og:image:height"]', '630');
+      updateMetaTag('meta[property="og:image:type"]', 'image/jpeg');
     }
 
     if (url) {
@@ -100,6 +106,8 @@ export const useMetaTags = ({
 
     // Add additional Twitter and WhatsApp specific meta tags
     updateMetaTag('meta[name="twitter:card"]', 'summary_large_image');
+
+    console.log('Meta tags updated for:', title || 'page');
 
     // Cleanup function to restore original meta tags
     return () => {

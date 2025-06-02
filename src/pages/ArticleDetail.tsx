@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -11,10 +11,12 @@ import ArticleDetailSkeleton from "@/components/ArticleDetailSkeleton";
 import ArticleNotFound from "@/components/ArticleNotFound";
 
 const ArticleDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Dynamic meta tags for the article
   useMetaTags({
@@ -28,23 +30,36 @@ const ArticleDetail = () => {
 
   useEffect(() => {
     const loadArticle = async () => {
-      if (id) {
-        try {
-          const articleData = await NewsService.getArticleById(id);
+      if (!id) {
+        setError("No article ID provided");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        console.log('Loading article with ID:', id);
+        const articleData = await NewsService.getArticleById(id);
+        
+        if (articleData) {
           setArticle(articleData);
-          if (articleData) {
-            NewsService.incrementViews(id);
-          }
-        } catch (error) {
-          console.error('Error loading article:', error);
-          toast({
-            title: "Error",
-            description: "Failed to load article",
-            variant: "destructive",
-          });
-        } finally {
-          setLoading(false);
+          setError(null);
+          // Increment views for valid articles
+          NewsService.incrementViews(id);
+          console.log('Article loaded successfully:', articleData.title);
+        } else {
+          console.log('Article not found for ID:', id);
+          setError("Article not found");
         }
+      } catch (error) {
+        console.error('Error loading article:', error);
+        setError("Failed to load article");
+        toast({
+          title: "Error",
+          description: "Failed to load article. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -53,8 +68,9 @@ const ArticleDetail = () => {
 
   // Set up real-time subscription for this specific article
   useEffect(() => {
-    if (!id) return;
+    if (!id || !article) return;
 
+    console.log('Setting up real-time subscription for article:', id);
     const channel = supabase
       .channel(`article_${id}_changes`)
       .on(
@@ -73,15 +89,18 @@ const ArticleDetail = () => {
       .subscribe();
 
     return () => {
+      console.log('Cleaning up real-time subscription for article:', id);
       supabase.removeChannel(channel);
     };
-  }, [id]);
+  }, [id, article]);
 
+  // Handle loading state
   if (loading) {
     return <ArticleDetailSkeleton />;
   }
 
-  if (!article) {
+  // Handle error states
+  if (error || !article) {
     return <ArticleNotFound />;
   }
 
