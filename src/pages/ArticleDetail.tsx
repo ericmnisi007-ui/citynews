@@ -18,12 +18,12 @@ const ArticleDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Dynamic meta tags for the article
+  // Dynamic meta tags for the article with absolute URLs
   useMetaTags({
     title: article?.title,
     description: article?.description,
     image: article?.image_url,
-    url: `https://cnza.lovable.app/article/${id}`,
+    url: `/article/${id}`,
     type: 'article',
     siteName: 'City News ZA'
   });

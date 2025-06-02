@@ -34,6 +34,8 @@ export const useMetaTags = ({
       'meta[name="twitter:description"]',
       'meta[name="twitter:image"]',
       'meta[name="twitter:url"]',
+      'meta[name="twitter:card"]',
+      'meta[name="description"]',
       'title'
     ];
 
@@ -75,15 +77,17 @@ export const useMetaTags = ({
     }
 
     if (description) {
-      const truncatedDescription = description.length > 150 
-        ? description.substring(0, 150) + '...' 
+      // Ensure description is not too long for social media
+      const truncatedDescription = description.length > 160 
+        ? description.substring(0, 160) + '...' 
         : description;
+      updateMetaTag('meta[name="description"]', truncatedDescription);
       updateMetaTag('meta[property="og:description"]', truncatedDescription);
       updateMetaTag('meta[name="twitter:description"]', truncatedDescription);
     }
 
     if (image) {
-      // Ensure the image URL is absolute
+      // Ensure the image URL is absolute and publicly accessible
       const imageUrl = image.startsWith('http') ? image : `https://cnza.lovable.app${image}`;
       updateMetaTag('meta[property="og:image"]', imageUrl);
       updateMetaTag('meta[name="twitter:image"]', imageUrl);
@@ -92,6 +96,7 @@ export const useMetaTags = ({
       updateMetaTag('meta[property="og:image:width"]', '1200');
       updateMetaTag('meta[property="og:image:height"]', '630');
       updateMetaTag('meta[property="og:image:type"]', 'image/jpeg');
+      updateMetaTag('meta[property="og:image:alt"]', title || 'City News ZA Article');
     }
 
     if (url) {
@@ -99,15 +104,34 @@ export const useMetaTags = ({
       const absoluteUrl = url.startsWith('http') ? url : `https://cnza.lovable.app${url}`;
       updateMetaTag('meta[property="og:url"]', absoluteUrl);
       updateMetaTag('meta[name="twitter:url"]', absoluteUrl);
+      
+      // Add canonical URL
+      let canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalLink);
+      }
+      canonicalLink.setAttribute('href', absoluteUrl);
     }
 
+    // Set article type and site info
     updateMetaTag('meta[property="og:type"]', type);
     updateMetaTag('meta[property="og:site_name"]', siteName);
 
-    // Add additional Twitter and WhatsApp specific meta tags
+    // Ensure Twitter card is set to large image for better previews
     updateMetaTag('meta[name="twitter:card"]', 'summary_large_image');
+    updateMetaTag('meta[name="twitter:site"]', '@CityNewsZA');
+
+    // Add additional structured data for articles
+    if (type === 'article') {
+      updateMetaTag('meta[property="article:publisher"]', 'City News ZA');
+      updateMetaTag('meta[property="og:locale"]', 'en_ZA');
+    }
 
     console.log('Meta tags updated for:', title || 'page');
+    console.log('Image URL:', image);
+    console.log('Page URL:', url);
 
     // Cleanup function to restore original meta tags
     return () => {
