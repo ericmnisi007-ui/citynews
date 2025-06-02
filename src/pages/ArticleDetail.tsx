@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { ArrowLeft, Clock, Eye, Share2 } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useMetaTags } from "@/hooks/useMetaTags";
 
 const ArticleDetail = () => {
   const { id } = useParams();
@@ -14,6 +14,16 @@ const ArticleDetail = () => {
   const { toast } = useToast();
   const [article, setArticle] = useState<NewsArticle | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Dynamic meta tags for the article
+  useMetaTags({
+    title: article?.title,
+    description: article?.description,
+    image: article?.image_url,
+    url: window.location.href,
+    type: 'article',
+    siteName: 'City News ZA'
+  });
 
   useEffect(() => {
     const loadArticle = async () => {
