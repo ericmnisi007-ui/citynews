@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ const ArticleDetail = () => {
     title: article?.title,
     description: article?.description,
     image: article?.image_url,
-    url: window.location.href,
+    url: `https://cnza.lovable.app/article/${id}`,
     type: 'article',
     siteName: 'City News ZA'
   });
@@ -77,14 +78,15 @@ const ArticleDetail = () => {
   }, [id]);
 
   const handleShare = () => {
+    const shareUrl = `https://cnza.lovable.app/article/${id}`;
     if (navigator.share) {
       navigator.share({
         title: article?.title,
         text: article?.description,
-        url: window.location.href,
+        url: shareUrl,
       });
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(shareUrl);
       toast({
         title: "Link Copied",
         description: "Article link copied to clipboard",

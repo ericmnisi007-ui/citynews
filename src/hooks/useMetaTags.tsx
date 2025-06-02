@@ -82,17 +82,24 @@ export const useMetaTags = ({
     }
 
     if (image) {
-      updateMetaTag('meta[property="og:image"]', image);
-      updateMetaTag('meta[name="twitter:image"]', image);
+      // Ensure the image URL is absolute
+      const imageUrl = image.startsWith('http') ? image : `https://cnza.lovable.app${image}`;
+      updateMetaTag('meta[property="og:image"]', imageUrl);
+      updateMetaTag('meta[name="twitter:image"]', imageUrl);
     }
 
     if (url) {
-      updateMetaTag('meta[property="og:url"]', url);
-      updateMetaTag('meta[name="twitter:url"]', url);
+      // Ensure the URL is absolute and uses the correct domain
+      const absoluteUrl = url.startsWith('http') ? url : `https://cnza.lovable.app${url}`;
+      updateMetaTag('meta[property="og:url"]', absoluteUrl);
+      updateMetaTag('meta[name="twitter:url"]', absoluteUrl);
     }
 
     updateMetaTag('meta[property="og:type"]', type);
     updateMetaTag('meta[property="og:site_name"]', siteName);
+
+    // Add additional Twitter and WhatsApp specific meta tags
+    updateMetaTag('meta[name="twitter:card"]', 'summary_large_image');
 
     // Cleanup function to restore original meta tags
     return () => {
