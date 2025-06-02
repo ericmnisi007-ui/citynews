@@ -78,6 +78,7 @@ const ArticleFormFields = ({
                   <SelectItem value="Business" className="text-white hover:bg-slate-700">Business</SelectItem>
                   <SelectItem value="Sports" className="text-white hover:bg-slate-700">Sports</SelectItem>
                   <SelectItem value="Technology" className="text-white hover:bg-slate-700">Technology</SelectItem>
+                  <SelectItem value="Leisure" className="text-white hover:bg-slate-700">Leisure</SelectItem>
                   <SelectItem value="General" className="text-white hover:bg-slate-700">General</SelectItem>
                 </SelectContent>
               </Select>
