@@ -1,5 +1,5 @@
 
-import { TrendingUp, Users, Building, Zap, Trophy, Globe } from "lucide-react";
+import { TrendingUp, Users, Building, Zap, Trophy, Globe, Coffee } from "lucide-react";
 
 export interface Category {
   name: string;
@@ -50,6 +50,14 @@ export const categories: Category[] = [
     description: "Sports news and updates",
     gradient: "from-orange-500 to-red-500",
     bgGradient: "from-orange-500/10 to-red-500/10"
+  },
+  {
+    name: "Leisure",
+    icon: Coffee,
+    count: 0,
+    description: "Lifestyle, entertainment and leisure activities",
+    gradient: "from-pink-500 to-purple-500",
+    bgGradient: "from-pink-500/10 to-purple-500/10"
   },
   {
     name: "General",

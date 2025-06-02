@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Search, Globe, Zap } from "lucide-react";
@@ -10,7 +9,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const categories = ["Headlines", "Politics", "Business", "Sports", "Technology"];
+  const categories = ["Headlines", "Politics", "Business", "Sports", "Technology", "Leisure"];
 
   useEffect(() => {
     const handleScroll = () => {
