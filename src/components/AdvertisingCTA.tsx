@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Megaphone, Sparkles, Zap, TrendingUp, Users } from 'lucide-react';
+import { Megaphone, Sparkles, Zap, TrendingUp, Users, Phone } from 'lucide-react';
 
 const AdvertisingCTA = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,17 +43,17 @@ const AdvertisingCTA = () => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button 
-            className="relative bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 hover:from-green-600 hover:via-emerald-600 hover:to-teal-600 text-white rounded-full p-6 shadow-2xl transition-all duration-500 transform hover:scale-110 hover:rotate-2 group animate-float"
+            className="relative bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 hover:from-green-600 hover:via-emerald-600 hover:to-green-700 text-white rounded-full p-6 shadow-2xl transition-all duration-500 transform hover:scale-110 hover:rotate-2 group animate-float"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {/* Animated background glow */}
+            {/* Animated background effects */}
             <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full opacity-30 animate-ping"></div>
             <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full opacity-20 animate-pulse"></div>
             
             <div className="relative flex items-center gap-3">
               <div className="relative">
-                <Megaphone className="h-7 w-7 group-hover:scale-125 transition-transform duration-300 animate-bounce" />
+                <Phone className="h-7 w-7 group-hover:scale-125 transition-transform duration-300 animate-bounce" />
                 <div className="absolute -top-1 -right-1">
                   <Sparkles className="h-4 w-4 text-yellow-300 animate-spin" style={{ animationDuration: '2s' }} />
                 </div>
@@ -62,10 +61,10 @@ const AdvertisingCTA = () => {
               
               <div className="hidden lg:block">
                 <div className="font-bold text-lg group-hover:text-yellow-200 transition-colors duration-300">
-                  Advertise With Us
+                  Ask Rob CNZA Journalist
                 </div>
                 <div className="text-xs opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                  Boost Your Business
+                  Contact Us
                 </div>
               </div>
               
@@ -86,11 +85,11 @@ const AdvertisingCTA = () => {
           <DialogHeader>
             <DialogTitle className="text-white text-center flex items-center gap-3 justify-center text-xl">
               <div className="relative">
-                <Megaphone className="h-6 w-6 text-green-400 animate-bounce" />
+                <Phone className="h-6 w-6 text-green-400 animate-bounce" />
                 <Zap className="absolute -top-1 -right-1 h-3 w-3 text-yellow-400 animate-pulse" />
               </div>
               <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent font-bold">
-                Advertise on City News ZA
+                Contact Our Journalist
               </span>
               <Sparkles className="h-5 w-5 text-green-400 animate-spin" style={{ animationDuration: '3s' }} />
             </DialogTitle>
@@ -157,7 +156,7 @@ const AdvertisingCTA = () => {
           
           <div className="mt-4 text-center">
             <p className="text-gray-400 text-sm">
-              🚀 Join thousands of businesses reaching South African audiences
+              📰 Get in touch with Rob for news tips and stories
             </p>
           </div>
         </DialogContent>
