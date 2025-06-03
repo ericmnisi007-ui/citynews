@@ -48,7 +48,7 @@ const WeatherWidget = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const WeatherIcon = ({ iconText, size = "text-4xl" }: { iconText: string; size?: string }) => {
+  const WeatherIcon = ({ iconText, size = "text-2xl" }: { iconText: string; size?: string }) => {
     return (
       <div className={`${size} ${isAnimating ? 'animate-spin' : 'animate-pulse'} transition-all duration-500`}>
         {iconText}
@@ -57,45 +57,45 @@ const WeatherWidget = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-600/95 via-blue-700/95 to-blue-800/95 backdrop-blur-lg rounded-3xl p-6 border border-blue-400/30 shadow-2xl hover:shadow-blue-400/40 transition-all duration-500 hover:scale-105 group animate-float relative overflow-hidden">
+    <div className="bg-gradient-to-br from-blue-600/95 via-blue-700/95 to-blue-800/95 backdrop-blur-lg rounded-2xl p-4 border border-blue-400/30 shadow-lg hover:shadow-blue-400/40 transition-all duration-300 hover:scale-105 group relative overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full animate-pulse"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full animate-bounce" style={{ animationDuration: '3s' }}></div>
+      <div className="absolute top-0 right-0 w-16 h-16 bg-blue-400/10 rounded-full animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-12 h-12 bg-white/5 rounded-full animate-bounce" style={{ animationDuration: '3s' }}></div>
       
       {/* Header */}
       <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
-            <span className="text-white/90 text-sm font-medium">Current Weather</span>
+            <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-ping"></div>
+            <span className="text-white/90 text-xs font-medium">Live Weather</span>
           </div>
           <div className="flex items-center gap-1 text-white/80 text-xs">
-            <MapPin className="h-3 w-3 animate-pulse" />
+            <MapPin className="h-3 w-3" />
             {currentWeather.location}
           </div>
         </div>
 
         {/* Main Weather Display */}
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center mb-3">
+        <div className="text-center mb-4">
+          <div className="flex items-center justify-center mb-2">
             <WeatherIcon iconText={weatherData[currentDay].icon} />
           </div>
-          <div className={`text-5xl font-bold text-white mb-2 transition-all duration-500 ${isAnimating ? 'animate-pulse scale-110' : ''}`}>
+          <div className={`text-3xl font-bold text-white mb-1 transition-all duration-500 ${isAnimating ? 'animate-pulse scale-110' : ''}`}>
             {weatherData[currentDay].temp}
           </div>
-          <div className="text-white/80 text-sm font-medium">
+          <div className="text-white/80 text-xs font-medium">
             {weatherData[currentDay].desc}
           </div>
         </div>
 
         {/* Weekly Forecast */}
-        <div className="grid grid-cols-7 gap-1 mb-6 bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
+        <div className="grid grid-cols-7 gap-1 mb-4 bg-white/10 rounded-xl p-2 backdrop-blur-sm">
           {weatherData.map((day, index) => (
             <div 
               key={day.day}
-              className={`text-center p-2 rounded-xl transition-all duration-500 cursor-pointer hover:scale-110 ${
+              className={`text-center p-1.5 rounded-lg transition-all duration-300 cursor-pointer hover:scale-105 ${
                 index === currentDay 
-                  ? 'bg-white/20 shadow-lg transform scale-105' 
+                  ? 'bg-white/20 shadow-md transform scale-105' 
                   : 'hover:bg-white/10'
               }`}
               onClick={() => setCurrentDay(index)}
@@ -105,8 +105,8 @@ const WeatherWidget = () => {
               }`}>
                 {day.day}
               </div>
-              <div className="text-lg mb-1">
-                <WeatherIcon iconText={day.icon} size="text-lg" />
+              <div className="text-sm mb-1">
+                <WeatherIcon iconText={day.icon} size="text-sm" />
               </div>
               <div className={`text-xs font-medium ${
                 index === currentDay ? 'text-white' : 'text-white/70'
@@ -118,37 +118,29 @@ const WeatherWidget = () => {
         </div>
 
         {/* Weather Details */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="text-center bg-white/10 rounded-xl p-3 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-            <Droplets className="h-4 w-4 text-blue-300 mx-auto mb-1 animate-pulse" />
+        <div className="grid grid-cols-3 gap-2">
+          <div className="text-center bg-white/10 rounded-lg p-2 hover:bg-white/15 transition-all duration-300">
+            <Droplets className="h-3 w-3 text-blue-300 mx-auto mb-1" />
             <div className="text-xs text-white/70">Humidity</div>
-            <div className={`text-sm font-bold text-white ${isAnimating ? 'animate-bounce' : ''}`}>
+            <div className={`text-xs font-bold text-white ${isAnimating ? 'animate-bounce' : ''}`}>
               {currentWeather.humidity}%
             </div>
           </div>
           
-          <div className="text-center bg-white/10 rounded-xl p-3 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-            <Wind className="h-4 w-4 text-blue-300 mx-auto mb-1 animate-pulse" />
+          <div className="text-center bg-white/10 rounded-lg p-2 hover:bg-white/15 transition-all duration-300">
+            <Wind className="h-3 w-3 text-blue-300 mx-auto mb-1" />
             <div className="text-xs text-white/70">Wind</div>
-            <div className={`text-sm font-bold text-white ${isAnimating ? 'animate-bounce' : ''}`}>
+            <div className={`text-xs font-bold text-white ${isAnimating ? 'animate-bounce' : ''}`}>
               {currentWeather.windSpeed}km/h
             </div>
           </div>
           
-          <div className="text-center bg-white/10 rounded-xl p-3 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-            <Eye className="h-4 w-4 text-blue-300 mx-auto mb-1 animate-pulse" />
+          <div className="text-center bg-white/10 rounded-lg p-2 hover:bg-white/15 transition-all duration-300">
+            <Eye className="h-3 w-3 text-blue-300 mx-auto mb-1" />
             <div className="text-xs text-white/70">Visibility</div>
-            <div className={`text-sm font-bold text-white ${isAnimating ? 'animate-bounce' : ''}`}>
+            <div className={`text-xs font-bold text-white ${isAnimating ? 'animate-bounce' : ''}`}>
               {currentWeather.visibility}km
             </div>
-          </div>
-        </div>
-
-        {/* Live indicator */}
-        <div className="mt-4 flex justify-center">
-          <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-ping"></div>
-            <span className="text-xs text-white/80">Live Updates</span>
           </div>
         </div>
       </div>
