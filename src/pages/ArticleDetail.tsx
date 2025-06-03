@@ -9,6 +9,7 @@ import ArticleDetailHeader from "@/components/ArticleDetailHeader";
 import ArticleDetailContent from "@/components/ArticleDetailContent";
 import ArticleDetailSkeleton from "@/components/ArticleDetailSkeleton";
 import ArticleNotFound from "@/components/ArticleNotFound";
+import SideAdvertisements from "@/components/SideAdvertisements";
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -106,9 +107,28 @@ const ArticleDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 pt-24">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ArticleDetailHeader />
-        <ArticleDetailContent article={article} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Left Sidebar - Advertisements */}
+          <div className="hidden lg:block">
+            <div className="sticky top-24">
+              <SideAdvertisements />
+            </div>
+          </div>
+          
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <ArticleDetailHeader />
+            <ArticleDetailContent article={article} />
+          </div>
+          
+          {/* Right Sidebar - Advertisements */}
+          <div className="hidden lg:block">
+            <div className="sticky top-24">
+              <SideAdvertisements />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
