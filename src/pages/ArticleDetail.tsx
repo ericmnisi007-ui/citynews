@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
@@ -9,6 +8,8 @@ import ArticleDetailHeader from "@/components/ArticleDetailHeader";
 import ArticleDetailContent from "@/components/ArticleDetailContent";
 import ArticleDetailSkeleton from "@/components/ArticleDetailSkeleton";
 import ArticleNotFound from "@/components/ArticleNotFound";
+import StaffCreditAd from "@/components/StaffCreditAd";
+import Plot49Ad from "@/components/Plot49Ad";
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -105,7 +106,11 @@ const ArticleDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 pt-24">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 pt-24 relative">
+      {/* Dynamic Advertising Components */}
+      <StaffCreditAd />
+      <Plot49Ad />
+      
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <ArticleDetailHeader />
         <ArticleDetailContent article={article} />
