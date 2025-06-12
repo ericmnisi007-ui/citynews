@@ -134,6 +134,71 @@ export type Database = {
           },
         ]
       }
+      loan_applications: {
+        Row: {
+          amount: number
+          application_date: string
+          application_month: string
+          created_at: string
+          due_date: string
+          id: string
+          interest_rate: number
+          monthly_limit_used: number
+          paid_date: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          application_date?: string
+          application_month?: string
+          created_at?: string
+          due_date: string
+          id?: string
+          interest_rate?: number
+          monthly_limit_used?: number
+          paid_date?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          application_date?: string
+          application_month?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          interest_rate?: number
+          monthly_limit_used?: number
+          paid_date?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_applications_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
@@ -160,6 +225,38 @@ export type Database = {
           sender_id?: string
         }
         Relationships: []
+      }
+      overdue_charges: {
+        Row: {
+          charge_amount: number
+          charge_date: string
+          created_at: string
+          id: string
+          loan_application_id: string
+        }
+        Insert: {
+          charge_amount?: number
+          charge_date?: string
+          created_at?: string
+          id?: string
+          loan_application_id: string
+        }
+        Update: {
+          charge_amount?: number
+          charge_date?: string
+          created_at?: string
+          id?: string
+          loan_application_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "overdue_charges_loan_application_id_fkey"
+            columns: ["loan_application_id"]
+            isOneToOne: false
+            referencedRelation: "loan_applications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -430,6 +527,56 @@ export type Database = {
           },
         ]
       }
+      student_activities: {
+        Row: {
+          activity_id: string
+          completed_date: string | null
+          created_at: string
+          evidence_urls: string[] | null
+          id: string
+          mentor_feedback: string | null
+          started_date: string | null
+          status: string
+          student_id: string
+          student_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          completed_date?: string | null
+          created_at?: string
+          evidence_urls?: string[] | null
+          id?: string
+          mentor_feedback?: string | null
+          started_date?: string | null
+          status?: string
+          student_id: string
+          student_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          completed_date?: string | null
+          created_at?: string
+          evidence_urls?: string[] | null
+          id?: string
+          mentor_feedback?: string | null
+          started_date?: string | null
+          status?: string
+          student_id?: string
+          student_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_activities_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "work_activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       time_logs: {
         Row: {
           employee_id: string
@@ -454,6 +601,191 @@ export type Database = {
         }
         Relationships: []
       }
+      user_profiles: {
+        Row: {
+          account_holder_name: string | null
+          account_number: string | null
+          account_type: string | null
+          bank_name: string | null
+          branch_code: string | null
+          clothing: number | null
+          contact_number: string | null
+          created_at: string | null
+          education: number | null
+          employer_company_name: string | null
+          employment_status: string | null
+          first_name: string
+          groceries: number | null
+          id: string
+          id_number: string | null
+          insurance: number | null
+          is_admin: boolean | null
+          last_name: string
+          loan_overdraft: number | null
+          medical_aid: number | null
+          mortgage_rent: number | null
+          net_salary: number
+          next_of_kin_contact: string | null
+          next_of_kin_first_name: string | null
+          next_of_kin_last_name: string | null
+          next_of_kin_relationship: string | null
+          transport_costs: number | null
+          updated_at: string | null
+          user_id: string
+          username: string | null
+          utilities: number | null
+          vehicle_installment: number | null
+          work_address: string | null
+          work_contact_number: string | null
+        }
+        Insert: {
+          account_holder_name?: string | null
+          account_number?: string | null
+          account_type?: string | null
+          bank_name?: string | null
+          branch_code?: string | null
+          clothing?: number | null
+          contact_number?: string | null
+          created_at?: string | null
+          education?: number | null
+          employer_company_name?: string | null
+          employment_status?: string | null
+          first_name: string
+          groceries?: number | null
+          id?: string
+          id_number?: string | null
+          insurance?: number | null
+          is_admin?: boolean | null
+          last_name: string
+          loan_overdraft?: number | null
+          medical_aid?: number | null
+          mortgage_rent?: number | null
+          net_salary?: number
+          next_of_kin_contact?: string | null
+          next_of_kin_first_name?: string | null
+          next_of_kin_last_name?: string | null
+          next_of_kin_relationship?: string | null
+          transport_costs?: number | null
+          updated_at?: string | null
+          user_id: string
+          username?: string | null
+          utilities?: number | null
+          vehicle_installment?: number | null
+          work_address?: string | null
+          work_contact_number?: string | null
+        }
+        Update: {
+          account_holder_name?: string | null
+          account_number?: string | null
+          account_type?: string | null
+          bank_name?: string | null
+          branch_code?: string | null
+          clothing?: number | null
+          contact_number?: string | null
+          created_at?: string | null
+          education?: number | null
+          employer_company_name?: string | null
+          employment_status?: string | null
+          first_name?: string
+          groceries?: number | null
+          id?: string
+          id_number?: string | null
+          insurance?: number | null
+          is_admin?: boolean | null
+          last_name?: string
+          loan_overdraft?: number | null
+          medical_aid?: number | null
+          mortgage_rent?: number | null
+          net_salary?: number
+          next_of_kin_contact?: string | null
+          next_of_kin_first_name?: string | null
+          next_of_kin_last_name?: string | null
+          next_of_kin_relationship?: string | null
+          transport_costs?: number | null
+          updated_at?: string | null
+          user_id?: string
+          username?: string | null
+          utilities?: number | null
+          vehicle_installment?: number | null
+          work_address?: string | null
+          work_contact_number?: string | null
+        }
+        Relationships: []
+      }
+      work_activities: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          module_id: string
+          order_index: number
+          requires_evidence: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_id: string
+          order_index: number
+          requires_evidence?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_id?: string
+          order_index?: number
+          requires_evidence?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_activities_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "work_modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_modules: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          order_index: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_index: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_index?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -462,6 +794,10 @@ export type Database = {
       calculate_distance: {
         Args: { lat1: number; lng1: number; lat2: number; lng2: number }
         Returns: number
+      }
+      create_overdue_charges: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       get_nearby_providers: {
         Args: {
