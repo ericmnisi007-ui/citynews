@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import confetti from 'canvas-confetti';
-import NewspaperLoader from "./NewspaperLoader";
+import LoadingGrid from "./LoadingGrid";
 
 const HeroSection = () => {
   const [recentArticles, setRecentArticles] = useState<NewsArticle[]>([]);
@@ -83,7 +83,7 @@ const HeroSection = () => {
   const backgroundPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322C55E' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
 
   if (loading || recentArticles.length === 0) {
-    return <NewspaperLoader />;
+    return <div className="pt-20"><LoadingGrid /></div>;
   }
 
   const currentArticle = recentArticles[currentSlide];
