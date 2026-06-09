@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
+import { supabase } from "@/integrations/supabase/client";
 import ArticleGrid from "./ArticleGrid";
 import LoadingGrid from "./LoadingGrid";
 import confetti from 'canvas-confetti';
@@ -61,6 +62,41 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
       loadArticles();
     }
   }, [propArticles, showOnlyHeadlines, toast]);
+
+  // Set up real-time subscription for article changes
+  useEffect(() => {
+    if (propArticles || !NewsService.getSupabaseAvailable()) return;
+    try {
+      const channel = supabase
+        .channel('articles_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'articles' }, () => {
+          const reloadArticles = async () => {
+            try {
+              let featured;
+              if (showOnlyHeadlines) {
+                const headlines = await NewsService.getHeadlinesOnly();
+                if (headlines.length < 6) {
+                  const all = await NewsService.getAllArticles();
+                  featured = [...headlines, ...all.filter(a => a.category !== 'Headlines').slice(0, 6 - headlines.length)];
+                } else {
+                  featured = headlines.slice(0, 6);
+                }
+              } else {
+                featured = await NewsService.getFeaturedArticles(6);
+              }
+              setArticles(featured);
+            } catch (error) {
+              console.error('Error reloading articles:', error);
+            }
+          };
+          reloadArticles();
+        })
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    } catch (e) {
+      console.warn('Could not set up real-time subscription:', e);
+    }
+  }, [propArticles, showOnlyHeadlines]);
 
   const handleReadMore = (article: NewsArticle) => {
     confetti({

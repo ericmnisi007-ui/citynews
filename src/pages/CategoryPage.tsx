@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
+import { supabase } from "@/integrations/supabase/client";
 import FeaturedArticles from "@/components/FeaturedArticles";
 import { useToast } from "@/hooks/use-toast";
 
@@ -34,6 +35,30 @@ const CategoryPage = () => {
 
     loadCategoryArticles();
   }, [category, toast]);
+
+  // Set up real-time subscription for category articles
+  useEffect(() => {
+    if (!category || !NewsService.getSupabaseAvailable()) return;
+    try {
+      const channel = supabase
+        .channel(`category_${category}_changes`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'articles', filter: `category=eq.${category}` }, () => {
+          const reloadArticles = async () => {
+            try {
+              const categoryArticles = await NewsService.getArticlesByCategory(category);
+              setArticles(categoryArticles);
+            } catch (error) {
+              console.error('Error reloading category articles:', error);
+            }
+          };
+          reloadArticles();
+        })
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    } catch (e) {
+      console.warn('Could not set up real-time subscription:', e);
+    }
+  }, [category]);
 
   const capitalizedCategory = category?.charAt(0).toUpperCase() + category?.slice(1);
 

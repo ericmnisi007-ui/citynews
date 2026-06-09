@@ -1,91 +1,245 @@
+import { supabase } from "@/integrations/supabase/client";
 import { LocalArticle, getLocalArticles, setLocalArticles } from "@/data/localArticles";
+
+export interface NewsArticle {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  category: string;
+  source: string;
+  published_at: string;
+  image_url: string;
+  url: string;
+  views: number;
+  is_trending: boolean;
+}
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-export interface NewsArticle extends LocalArticle {}
+let supabaseAvailable = true;
+
+async function withFallback<T>(
+  supabaseFn: () => Promise<T>,
+  localFn: () => T,
+  ignoreError = false
+): Promise<T> {
+  if (!supabaseAvailable) {
+    return localFn();
+  }
+  try {
+    return await supabaseFn();
+  } catch (e: any) {
+    if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
+      supabaseAvailable = false;
+    }
+    if (!ignoreError) {
+      console.warn('Supabase unavailable, falling back to local data');
+    }
+    return localFn();
+  }
+}
 
 export class NewsService {
   static async getAllArticles(): Promise<NewsArticle[]> {
-    const articles = getLocalArticles();
-    return articles.sort((a, b) => 
-      new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+    return withFallback(
+      async () => {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .order('published_at', { ascending: false });
+        if (error) throw error;
+        return (data || []) as NewsArticle[];
+      },
+      () => getLocalArticles().sort((a, b) =>
+        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+      )
     );
   }
 
   static async getArticlesByCategory(category: string): Promise<NewsArticle[]> {
     const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
-    const articles = getLocalArticles();
-    return articles
-      .filter(article => article.category === formattedCategory)
-      .sort((a, b) => 
-        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-      );
+    return withFallback(
+      async () => {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('category', formattedCategory)
+          .order('published_at', { ascending: false });
+        if (error) throw error;
+        return (data || []) as NewsArticle[];
+      },
+      () => getLocalArticles()
+        .filter(a => a.category === formattedCategory)
+        .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+    );
   }
 
   static async getHeadlinesOnly(): Promise<NewsArticle[]> {
-    const articles = getLocalArticles();
-    return articles
-      .filter(article => article.category === 'Headlines')
-      .sort((a, b) => 
-        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-      );
+    return withFallback(
+      async () => {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('category', 'Headlines')
+          .order('published_at', { ascending: false });
+        if (error) throw error;
+        return (data || []) as NewsArticle[];
+      },
+      () => getLocalArticles()
+        .filter(a => a.category === 'Headlines')
+        .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+    );
   }
 
   static async getTrendingArticles(): Promise<NewsArticle[]> {
-    const articles = getLocalArticles();
-    return articles
-      .filter(article => article.is_trending)
-      .sort((a, b) => 
-        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-      );
+    return withFallback(
+      async () => {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('is_trending', true)
+          .order('published_at', { ascending: false });
+        if (error) throw error;
+        return (data || []) as NewsArticle[];
+      },
+      () => getLocalArticles()
+        .filter(a => a.is_trending)
+        .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+    );
   }
 
   static async getArticleById(id: string): Promise<NewsArticle | null> {
-    if (!id || id.trim() === '') {
-      console.error('Invalid article ID provided');
-      return null;
-    }
-    const articles = getLocalArticles();
-    return articles.find(article => article.id === id) || null;
+    if (!id || id.trim() === '') return null;
+    return withFallback(
+      async () => {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+        if (error) throw error;
+        return data as NewsArticle | null;
+      },
+      () => getLocalArticles().find(a => a.id === id) || null
+    );
   }
 
   static async getFeaturedArticles(limit: number = 6): Promise<NewsArticle[]> {
-    const articles = getLocalArticles();
-    return articles
-      .sort((a, b) => 
-        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-      )
-      .slice(0, limit);
+    return withFallback(
+      async () => {
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .order('published_at', { ascending: false })
+          .limit(limit);
+        if (error) throw error;
+        return (data || []) as NewsArticle[];
+      },
+      () => getLocalArticles()
+        .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+        .slice(0, limit)
+    );
   }
 
   static async addArticle(article: Omit<NewsArticle, 'id'>): Promise<void> {
+    try {
+      if (supabaseAvailable) {
+        const { error } = await supabase
+          .from('articles')
+          .insert([{
+            title: article.title,
+            description: article.description,
+            content: article.content,
+            category: article.category,
+            source: article.source,
+            published_at: article.published_at,
+            image_url: article.image_url,
+            url: article.url,
+            views: article.views,
+            is_trending: article.is_trending
+          }]);
+        if (error) throw error;
+      }
+    } catch (e: any) {
+      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
+        supabaseAvailable = false;
+      }
+      console.warn('Could not save to Supabase, saving locally:', e?.message);
+    }
     const articles = getLocalArticles();
-    const newArticle: NewsArticle = {
-      ...article,
-      id: generateId(),
-    };
-    articles.unshift(newArticle);
+    articles.unshift({ ...article, id: generateId() });
     setLocalArticles(articles);
   }
 
   static async updateArticle(updatedArticle: NewsArticle): Promise<void> {
+    try {
+      if (supabaseAvailable) {
+        const { error } = await supabase
+          .from('articles')
+          .update({
+            title: updatedArticle.title,
+            description: updatedArticle.description,
+            content: updatedArticle.content,
+            category: updatedArticle.category,
+            source: updatedArticle.source,
+            published_at: updatedArticle.published_at,
+            image_url: updatedArticle.image_url,
+            url: updatedArticle.url,
+            views: updatedArticle.views,
+            is_trending: updatedArticle.is_trending
+          })
+          .eq('id', updatedArticle.id);
+        if (error) throw error;
+      }
+    } catch (e: any) {
+      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
+        supabaseAvailable = false;
+      }
+      console.warn('Could not update in Supabase, updating locally:', e?.message);
+    }
     const articles = getLocalArticles();
     const index = articles.findIndex(a => a.id === updatedArticle.id);
     if (index !== -1) {
       articles[index] = updatedArticle;
-      setLocalArticles(articles);
+    } else {
+      articles.unshift(updatedArticle);
     }
+    setLocalArticles(articles);
   }
 
   static async deleteArticle(id: string): Promise<void> {
+    try {
+      if (supabaseAvailable) {
+        const { error } = await supabase
+          .from('articles')
+          .delete()
+          .eq('id', id);
+        if (error) throw error;
+      }
+    } catch (e: any) {
+      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
+        supabaseAvailable = false;
+      }
+      console.warn('Could not delete from Supabase, deleting locally:', e?.message);
+    }
     const articles = getLocalArticles();
-    const filtered = articles.filter(a => a.id !== id);
-    setLocalArticles(filtered);
+    setLocalArticles(articles.filter(a => a.id !== id));
   }
 
   static async incrementViews(id: string): Promise<void> {
+    try {
+      if (supabaseAvailable) {
+        const { error } = await supabase.rpc('increment_views', { article_id: id });
+        if (error) throw error;
+      }
+    } catch (e: any) {
+      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
+        supabaseAvailable = false;
+      }
+    }
     const articles = getLocalArticles();
     const article = articles.find(a => a.id === id);
     if (article) {
@@ -108,11 +262,9 @@ export class NewsService {
       views: 0,
       is_trending: Math.random() > 0.7
     }));
-
     for (const article of articles) {
       await this.addArticle(article);
     }
-
     return articles.map((article, index) => ({
       ...article,
       id: `rss-${Date.now()}-${index}`
@@ -206,9 +358,11 @@ export class NewsService {
   }
 
   static formatViews(views: number): string {
-    if (views >= 1000) {
-      return `${(views / 1000).toFixed(1)}k`;
-    }
+    if (views >= 1000) return `${(views / 1000).toFixed(1)}k`;
     return views.toString();
+  }
+
+  static getSupabaseAvailable(): boolean {
+    return supabaseAvailable;
   }
 }

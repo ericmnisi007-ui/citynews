@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { NewsService, NewsArticle } from "@/services/newsService";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useMetaTags } from "@/hooks/useMetaTags";
 import ArticleDetailHeader from "@/components/ArticleDetailHeader";
@@ -65,6 +66,22 @@ const ArticleDetail = () => {
 
     loadArticle();
   }, [id, toast]);
+
+  // Set up real-time subscription for this specific article
+  useEffect(() => {
+    if (!id || !article || !NewsService.getSupabaseAvailable()) return;
+    try {
+      const channel = supabase
+        .channel(`article_${id}_changes`)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'articles', filter: `id=eq.${id}` },
+          (payload) => { setArticle(payload.new as NewsArticle); }
+        )
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    } catch (e) {
+      console.warn('Could not set up real-time subscription:', e);
+    }
+  }, [id, article]);
 
   // Handle loading state
   if (loading) {
