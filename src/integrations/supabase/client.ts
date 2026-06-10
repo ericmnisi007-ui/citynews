@@ -5,7 +5,20 @@ import type { Database } from './types';
 const SUPABASE_URL = "https://uwdcmfjcewucfabujwwa.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3ZGNtZmpjZXd1Y2ZhYnVqd3dhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcxMzYyODYsImV4cCI6MjA2MjcxMjI4Nn0.gsvxk7NVWm9FLtoBsXAELXjIi3ENSTnoOjSiL4Lo3To";
 
+async function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2000);
+  try {
+    const response = await fetch(input, { ...init, signal: controller.signal });
+    return response;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  global: { fetch: fetchWithTimeout }
+});

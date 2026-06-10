@@ -19,6 +19,8 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+const TIMEOUT = Symbol('timeout');
+
 let supabaseAvailable = true;
 
 async function withFallback<T>(
@@ -30,9 +32,14 @@ async function withFallback<T>(
     return localFn();
   }
   try {
-    return await supabaseFn();
+    const result = await Promise.race([
+      supabaseFn(),
+      new Promise<typeof TIMEOUT>((resolve) => setTimeout(() => resolve(TIMEOUT), 1500))
+    ]);
+    if (result === TIMEOUT) throw new Error('timeout');
+    return result as T;
   } catch (e: any) {
-    if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
+    if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError') || e?.message === 'timeout') {
       supabaseAvailable = false;
     }
     if (!ignoreError) {
