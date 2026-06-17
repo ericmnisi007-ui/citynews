@@ -1,4 +1,3 @@
-
 import React from "react";
 import { NewsArticle } from "@/services/newsService";
 import ArticleCard from "./ArticleCard";
@@ -10,7 +9,7 @@ interface ArticleGridProps {
 
 const ArticleGrid = ({ articles, onReadMore }: ArticleGridProps) => {
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       {articles.map((article, index) => (
         <ArticleCard
           key={article.id}

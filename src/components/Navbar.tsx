@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, Globe, Zap } from "lucide-react";
+import { Menu, Search, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -46,83 +46,72 @@ const Navbar = () => {
 
   return (
     <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-      isScrolled 
-        ? 'bg-slate-900/70 backdrop-blur-md shadow-2xl' 
-        : 'bg-transparent'
+      isScrolled
+        ? 'bg-[#0a0a0a]/95 backdrop-blur-xl shadow-[0_1px_0_0_rgba(255,255,255,0.06)]'
+        : 'bg-[#0a0a0a]/80 backdrop-blur-sm'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="flex items-center space-x-4 animate-slide-in-left cursor-pointer" onClick={handleLogoClick}>
-            <div className="relative">
-              <div className="bg-green-600 p-3 rounded-lg glow-green">
-                <div className="text-white font-black text-xl leading-none">
-                  CNZA
-                </div>
-              </div>
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={handleLogoClick}>
+            <div className="bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20">
+              <span className="text-primary font-black text-lg tracking-tight">CN</span>
+              <span className="text-white font-black text-lg tracking-tight">ZA</span>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent text-glow">
-                City News ZA
-              </h1>
-              <p className="text-xs text-gray-400 font-medium">Independent & Authentic</p>
+            <div className="hidden sm:block">
+              <h1 className="text-lg font-bold text-white tracking-tight">City News ZA</h1>
+              <p className="text-[11px] text-muted-foreground font-medium">Independent & Authentic</p>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center space-x-2">
-            {categories.map((category, index) => (
-              <Button
+          <div className="hidden md:flex items-center space-x-1">
+            {categories.map((category) => (
+              <button
                 key={category}
-                variant="ghost"
                 onClick={() => handleCategoryClick(category)}
-                className={`text-gray-300 hover:text-white hover:bg-green-500 transition-all duration-300 border border-transparent hover:border-green-400/30 rounded-xl animate-slide-up stagger-${index + 1}`}
+                className="px-3 py-2 text-sm text-muted-foreground hover:text-white transition-colors relative group"
               >
                 {category}
-              </Button>
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-3/4" />
+              </button>
             ))}
           </div>
 
-          <div className="flex items-center space-x-4 animate-slide-in-right">
-            <Button 
-              variant="outline" 
-              size="sm" 
+          <div className="flex items-center space-x-3">
+            <button
               onClick={handleSearchClick}
-              className="hidden sm:flex bg-green-500 hover:bg-green-600 border-green-500 text-white hover:text-white"
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-white transition-all"
             >
-              <Search className="h-4 w-4 mr-2" />
-              Search
-            </Button>
+              <Search className="h-4 w-4" />
+            </button>
 
-            <div 
+            <div
               onDoubleClick={handleAdminAccess}
-              className="hidden sm:block w-8 h-8 cursor-pointer opacity-0 hover:opacity-20 transition-opacity"
+              className="hidden sm:block w-7 h-7 cursor-pointer opacity-0 hover:opacity-20 transition-opacity rounded bg-secondary"
               title="Double-click for admin access"
-            >
-              <div className="w-full h-full bg-slate-700 rounded"></div>
-            </div>
-            
+            />
+
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="md:hidden bg-green-500 hover:bg-green-600 border-green-500 text-white hover:text-white">
+                <button className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-white transition-all">
                   <Menu className="h-4 w-4" />
-                </Button>
+                </button>
               </SheetTrigger>
-              <SheetContent className="bg-slate-900/95 backdrop-blur-md border-l border-green-400/30">
-                <div className="flex flex-col space-y-4 mt-8">
-                  {categories.map((category, index) => (
-                    <Button 
-                      key={category} 
-                      variant="ghost" 
+              <SheetContent className="bg-[#0a0a0a] border-l border-border p-6">
+                <div className="flex flex-col space-y-2 mt-8">
+                  {categories.map((category) => (
+                    <button
+                      key={category}
                       onClick={() => handleCategoryClick(category)}
-                      className={`justify-start text-gray-300 hover:text-white hover:bg-green-500 animate-slide-in-right stagger-${index + 1}`}
+                      className="w-full text-left px-4 py-3 text-muted-foreground hover:text-white hover:bg-secondary rounded-lg transition-all"
                     >
                       {category}
-                    </Button>
+                    </button>
                   ))}
-                  <div 
+                  <div
                     onDoubleClick={handleAdminAccess}
-                    className="mt-4 p-2 text-center text-xs text-gray-500 cursor-pointer"
+                    className="mt-6 pt-6 border-t border-border text-center text-xs text-muted-foreground"
                   >
-                    Double-tap for admin
+                    Double-tap for admin access
                   </div>
                 </div>
               </SheetContent>

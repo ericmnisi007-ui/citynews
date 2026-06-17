@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Calendar, Eye, ArrowRight } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import confetti from 'canvas-confetti';
 import LoadingGrid from "./LoadingGrid";
 
 const HeroSection = () => {
   const [recentArticles, setRecentArticles] = useState<NewsArticle[]>([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -18,9 +16,9 @@ const HeroSection = () => {
     const loadRecentArticles = async () => {
       try {
         const articles = await NewsService.getAllArticles();
-        const sortedArticles = articles.sort((a, b) => 
+        const sortedArticles = articles.sort((a, b) =>
           new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-        ).slice(0, 5);
+        ).slice(0, 4);
         setRecentArticles(sortedArticles);
       } catch (error) {
         console.error('Error loading recent articles:', error);
@@ -32,7 +30,6 @@ const HeroSection = () => {
     loadRecentArticles();
   }, []);
 
-  // Set up real-time subscription for article changes
   useEffect(() => {
     if (!NewsService.getSupabaseAvailable()) return;
     try {
@@ -42,7 +39,7 @@ const HeroSection = () => {
           const reloadArticles = async () => {
             try {
               const articles = await NewsService.getAllArticles();
-              setRecentArticles(articles.slice(0, 5));
+              setRecentArticles(articles.slice(0, 4));
             } catch (error) {
               console.error('Error reloading hero articles:', error);
             }
@@ -56,22 +53,7 @@ const HeroSection = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (recentArticles.length > 0) {
-      const timer = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % recentArticles.length);
-      }, 5000);
-      return () => clearInterval(timer);
-    }
-  }, [recentArticles.length]);
-
   const handleReadMore = (article: NewsArticle) => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-    
     NewsService.incrementViews(article.id);
     toast({
       title: "Opening Article",
@@ -80,106 +62,95 @@ const HeroSection = () => {
     navigate(`/article/${article.id}`);
   };
 
-  const backgroundPattern = "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322C55E' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
-
   if (loading || recentArticles.length === 0) {
-    return <div className="pt-20"><LoadingGrid /></div>;
+    return <div className="pt-24"><LoadingGrid /></div>;
   }
 
-  const currentArticle = recentArticles[currentSlide];
+  const mainArticle = recentArticles[0];
+  const sideArticles = recentArticles.slice(1, 4);
+  const fallbackImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Crect fill='%23121212' width='800' height='600'/%3E%3Ctext fill='%23444' font-family='Inter, sans-serif' font-size='20' x='300' y='300'%3ECity News ZA%3C/text%3E%3C/svg%3E";
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 opacity-60">
-        <div 
-          className="absolute inset-0 opacity-50"
-          style={{ backgroundImage: `url("${backgroundPattern}")` }}
-        ></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center px-6 py-3 rounded-full bg-slate-900/70 backdrop-blur-md border border-green-400/30">
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-              <TrendingUp className="h-5 w-5 text-green-400 mr-2" />
-              <span className="text-green-400 font-semibold">Latest News</span>
+    <section className="pt-20 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Main Featured Article */}
+        <div
+          className="lg:col-span-2 relative group cursor-pointer rounded-2xl overflow-hidden"
+          onClick={() => handleReadMore(mainArticle)}
+        >
+          <div className="relative h-[420px] md:h-[500px]">
+            <img
+              src={mainArticle.image_url || fallbackImg}
+              alt={mainArticle.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              onError={(e) => { (e.target as HTMLImageElement).src = fallbackImg; }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+              <div className="flex items-center space-x-3 mb-3">
+                <span className="px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
+                  {mainArticle.category}
+                </span>
+                <span className="flex items-center text-xs text-gray-400">
+                  <Calendar className="h-3 w-3 mr-1" />
+                  {NewsService.formatTimeAgo(mainArticle.published_at)}
+                </span>
+                <span className="flex items-center text-xs text-gray-400">
+                  <Eye className="h-3 w-3 mr-1" />
+                  {NewsService.formatViews(mainArticle.views)}
+                </span>
+              </div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">
+                {mainArticle.title}
+              </h2>
+              <p className="text-gray-400 text-sm md:text-base line-clamp-2 mb-4">
+                {mainArticle.description}
+              </p>
+              <span className="inline-flex items-center text-primary text-sm font-semibold group-hover:underline">
+                Read Full Story <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="relative">
-          <div className="bg-slate-900/70 backdrop-blur-md border border-green-400/20 overflow-hidden hover:shadow-xl transition-shadow duration-300 glow-green rounded-xl">
-            <div className="relative h-[600px] md:h-[500px]">
-              <div className="absolute inset-0 md:w-3/5">
-                <img
-                  src={currentArticle.image_url}
-                  alt={currentArticle.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-slate-900/60 md:to-slate-900/95"></div>
-                
-                {currentArticle.is_trending && (
-                  <div className="absolute top-6 left-6 z-10">
-                    <div className="bg-green-500 text-white font-bold px-4 py-2 text-sm border-0 rounded-full">
-                      <div className="w-2 h-2 bg-white rounded-full mr-2 inline-block"></div>
-                      TRENDING
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="absolute inset-0 md:left-3/5 p-8 md:p-12 flex flex-col justify-center">
-                <div className="absolute inset-0 bg-slate-900/70 md:bg-transparent"></div>
-                
-                <div className="space-y-6 relative z-10">
-                  <div className="flex items-center gap-6 text-sm">
-                    <div className="bg-green-500 text-white border-0 px-3 py-1 rounded-full">
-                      {currentArticle.category}
-                    </div>
-                    <div className="flex items-center text-gray-300">
-                      {NewsService.formatTimeAgo(currentArticle.published_at)}
-                    </div>
-                    <div className="flex items-center text-gray-300">
-                      {NewsService.formatViews(currentArticle.views)} views
-                    </div>
-                  </div>
-
-                  <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight hover:text-green-400 transition-colors duration-300 drop-shadow-lg text-shadow-lg">
-                    {currentArticle.title}
-                  </h2>
-
-                  <p className="text-lg text-gray-200 leading-relaxed max-w-xl drop-shadow-md">
-                    {currentArticle.description}
-                  </p>
-
-                  <div className="flex items-center gap-4 pt-4">
-                    <button 
-                      onClick={() => handleReadMore(currentArticle)}
-                      className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 glow-green"
-                    >
-                      Read Full Story
-                    </button>
+        {/* Side Articles */}
+        <div className="flex flex-col gap-4">
+          {sideArticles.map((article, index) => (
+            <div
+              key={article.id}
+              className="group cursor-pointer rounded-xl overflow-hidden bg-card border border-border hover:border-primary/30 transition-all hover-lift"
+              onClick={() => handleReadMore(article)}
+            >
+              <div className="flex h-[150px]">
+                <div className="w-1/3 min-w-[120px] overflow-hidden">
+                  <img
+                    src={article.image_url || fallbackImg}
+                    alt={article.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={(e) => { (e.target as HTMLImageElement).src = fallbackImg; }}
+                  />
+                </div>
+                <div className="flex-1 p-4 flex flex-col justify-center">
+                  <span className="text-[11px] font-bold text-primary uppercase tracking-wider mb-1">
+                    {article.category}
+                  </span>
+                  <h3 className="text-sm font-semibold text-white line-clamp-2 leading-snug mb-2">
+                    {article.title}
+                  </h3>
+                  <div className="flex items-center text-[11px] text-muted-foreground space-x-3">
+                    <span className="flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      {NewsService.formatTimeAgo(article.published_at)}
+                    </span>
+                    <span className="flex items-center">
+                      <Eye className="h-3 w-3 mr-1" />
+                      {NewsService.formatViews(article.views)}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="flex justify-center mt-6 space-x-2">
-            {recentArticles.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide 
-                    ? 'bg-green-400 w-8' 
-                    : 'bg-slate-600 hover:bg-slate-500'
-                }`}
-              />
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </section>

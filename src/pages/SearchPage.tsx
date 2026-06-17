@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { NewsService, NewsArticle } from "@/services/newsService";
 import FeaturedArticles from "@/components/FeaturedArticles";
 
@@ -14,12 +13,9 @@ const SearchPage = () => {
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
-    
     setLoading(true);
     setHasSearched(true);
-    
     try {
-      // Simulate search by filtering articles
       const allArticles = await NewsService.getAllArticles();
       const filtered = allArticles.filter(article =>
         article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,61 +32,60 @@ const SearchPage = () => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
+    if (e.key === 'Enter') handleSearch();
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 pt-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-12">
-          <h1 className="text-5xl font-bold text-white mb-8">Search News</h1>
-          
-          <div className="max-w-2xl mx-auto">
-            <div className="flex gap-4">
+    <div className="min-h-screen bg-[#0a0a0a] pt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">Search News</h1>
+          <div className="max-w-2xl">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search articles..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="bg-white/10 border-green-400/30 text-white placeholder-gray-300 focus:border-green-400 focus:ring-green-400/20"
+                className="pl-10 pr-20 h-12 bg-secondary border-border text-white placeholder:text-muted-foreground focus:border-primary/50 rounded-xl"
               />
+              {searchTerm && (
+                <button
+                  onClick={() => { setSearchTerm(""); setHasSearched(false); }}
+                  className="absolute right-20 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
               <Button
                 onClick={handleSearch}
-                className="bg-green-500 hover:bg-green-600"
-                disabled={loading}
+                disabled={loading || !searchTerm.trim()}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-10 bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                <Search className="h-4 w-4" />
+                {loading ? "Searching..." : "Search"}
               </Button>
             </div>
           </div>
         </div>
 
-        {loading && (
-          <div className="text-center">
-            <div className="text-white text-lg">Searching...</div>
-          </div>
-        )}
-
         {hasSearched && !loading && (
-          <div className="mb-8">
-            <p className="text-gray-400">
-              Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} for "{searchTerm}"
-            </p>
-          </div>
+          <p className="text-muted-foreground mb-8">
+            Found <span className="text-primary font-semibold">{searchResults.length}</span> result{searchResults.length !== 1 ? 's' : ''} for "{searchTerm}"
+          </p>
         )}
 
         {hasSearched && !loading && searchResults.length > 0 && (
-          <div>
-            <FeaturedArticles articles={searchResults} />
-          </div>
+          <FeaturedArticles articles={searchResults} />
         )}
 
         {hasSearched && !loading && searchResults.length === 0 && (
-          <div className="text-center">
-            <p className="text-gray-400 text-lg">No articles found matching your search.</p>
+          <div className="text-center py-20">
+            <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4">
+              <Search className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-lg text-muted-foreground">No articles found matching your search.</p>
           </div>
         )}
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +5,6 @@ import { NewsService, NewsArticle } from "@/services/newsService";
 import { supabase } from "@/integrations/supabase/client";
 import ArticleGrid from "./ArticleGrid";
 import LoadingGrid from "./LoadingGrid";
-import confetti from 'canvas-confetti';
 
 interface FeaturedArticlesProps {
   articles?: NewsArticle[];
@@ -23,47 +21,34 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
     if (propArticles) {
       setArticles(propArticles);
       setLoading(false);
-    } else {
-      const loadArticles = async () => {
-        try {
-          let featuredArticles;
-          if (showOnlyHeadlines) {
-            // Prioritize Headlines category for featured stories
-            const headlinesArticles = await NewsService.getHeadlinesOnly();
-            console.log('Headlines articles loaded:', headlinesArticles.length);
-            
-            if (headlinesArticles.length < 6) {
-              // If we don't have enough headlines, supplement with other articles
-              const allArticles = await NewsService.getAllArticles();
-              const nonHeadlines = allArticles
-                .filter(article => article.category !== 'Headlines')
-                .slice(0, 6 - headlinesArticles.length);
-              featuredArticles = [...headlinesArticles, ...nonHeadlines];
-            } else {
-              featuredArticles = headlinesArticles.slice(0, 6);
-            }
-          } else {
-            featuredArticles = await NewsService.getFeaturedArticles(6);
-          }
-          console.log('Featured articles loaded:', featuredArticles.length);
-          setArticles(featuredArticles);
-        } catch (error) {
-          console.error('Error loading articles:', error);
-          toast({
-            title: "Error",
-            description: "Failed to load articles. Please try again.",
-            variant: "destructive",
-          });
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      loadArticles();
+      return;
     }
-  }, [propArticles, showOnlyHeadlines, toast]);
 
-  // Set up real-time subscription for article changes
+    const loadArticles = async () => {
+      try {
+        let featured;
+        if (showOnlyHeadlines) {
+          const headlines = await NewsService.getHeadlinesOnly();
+          if (headlines.length < 6) {
+            const all = await NewsService.getAllArticles();
+            featured = [...headlines, ...all.filter(a => a.category !== 'Headlines').slice(0, 6 - headlines.length)];
+          } else {
+            featured = headlines.slice(0, 6);
+          }
+        } else {
+          featured = await NewsService.getFeaturedArticles(6);
+        }
+        setArticles(featured);
+      } catch (error) {
+        console.error('Error loading articles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadArticles();
+  }, [propArticles, showOnlyHeadlines]);
+
   useEffect(() => {
     if (propArticles || !NewsService.getSupabaseAvailable()) return;
     try {
@@ -99,12 +84,6 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
   }, [propArticles, showOnlyHeadlines]);
 
   const handleReadMore = (article: NewsArticle) => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-    
     NewsService.incrementViews(article.id);
     toast({
       title: "Opening Article",
@@ -118,13 +97,17 @@ const FeaturedArticles = ({ articles: propArticles, showOnlyHeadlines = false }:
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {!propArticles && (
-        <div className="mb-12 animate-slide-up">
-          <div>
-            <h2 className="text-4xl font-bold text-white mb-2">Featured Stories</h2>
-            <p className="text-gray-400">Real news from trusted South African sources</p>
-          </div>
+        <div className="mb-8">
+          <h2 className="section-title">
+            {showOnlyHeadlines ? "Top Headlines" : "Featured Stories"}
+          </h2>
+          <p className="text-muted-foreground mt-3">
+            {showOnlyHeadlines
+              ? "Breaking news and top stories from across South Africa"
+              : "Curated stories you shouldn't miss"}
+          </p>
         </div>
       )}
       <ArticleGrid articles={articles} onReadMore={handleReadMore} />

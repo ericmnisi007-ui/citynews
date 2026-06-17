@@ -20,32 +20,55 @@ function generateId(): string {
 }
 
 const TIMEOUT = Symbol('timeout');
-
 let supabaseAvailable = true;
+let lastFailedAt = 0;
 
 async function withFallback<T>(
   supabaseFn: () => Promise<T>,
   localFn: () => T,
   ignoreError = false
 ): Promise<T> {
-  if (!supabaseAvailable) {
+  if (!supabaseAvailable && Date.now() - lastFailedAt < 30000) {
     return localFn();
   }
+  supabaseAvailable = true;
   try {
     const result = await Promise.race([
       supabaseFn(),
-      new Promise<typeof TIMEOUT>((resolve) => setTimeout(() => resolve(TIMEOUT), 1500))
+      new Promise<typeof TIMEOUT>((resolve) => setTimeout(() => resolve(TIMEOUT), 3000))
     ]);
     if (result === TIMEOUT) throw new Error('timeout');
     return result as T;
   } catch (e: any) {
     if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError') || e?.message === 'timeout') {
       supabaseAvailable = false;
+      lastFailedAt = Date.now();
     }
     if (!ignoreError) {
       console.warn('Supabase unavailable, falling back to local data');
     }
     return localFn();
+  }
+}
+
+async function trySupabaseWrite<T>(fn: () => Promise<T>): Promise<T | null> {
+  try {
+    if (!supabaseAvailable && Date.now() - lastFailedAt < 30000) {
+      return null;
+    }
+    supabaseAvailable = true;
+    const result = await Promise.race([
+      fn(),
+      new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+    ]);
+    return result as T;
+  } catch (e: any) {
+    if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError') || e?.message === 'timeout') {
+      supabaseAvailable = false;
+      lastFailedAt = Date.now();
+    }
+    console.warn('Supabase write failed:', e?.message);
+    return null;
   }
 }
 
@@ -152,61 +175,45 @@ export class NewsService {
   }
 
   static async addArticle(article: Omit<NewsArticle, 'id'>): Promise<void> {
-    try {
-      if (supabaseAvailable) {
-        const { error } = await supabase
-          .from('articles')
-          .insert([{
-            title: article.title,
-            description: article.description,
-            content: article.content,
-            category: article.category,
-            source: article.source,
-            published_at: article.published_at,
-            image_url: article.image_url,
-            url: article.url,
-            views: article.views,
-            is_trending: article.is_trending
-          }]);
-        if (error) throw error;
-      }
-    } catch (e: any) {
-      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
-        supabaseAvailable = false;
-      }
-      console.warn('Could not save to Supabase, saving locally:', e?.message);
-    }
+    await trySupabaseWrite(async () => {
+      const { error } = await supabase
+        .from('articles')
+        .insert([{
+          title: article.title,
+          description: article.description,
+          content: article.content,
+          category: article.category,
+          source: article.source,
+          published_at: article.published_at,
+          image_url: article.image_url,
+          views: article.views,
+          is_trending: article.is_trending
+        }]);
+      if (error) throw error;
+    });
     const articles = getLocalArticles();
     articles.unshift({ ...article, id: generateId() });
     setLocalArticles(articles);
   }
 
   static async updateArticle(updatedArticle: NewsArticle): Promise<void> {
-    try {
-      if (supabaseAvailable) {
-        const { error } = await supabase
-          .from('articles')
-          .update({
-            title: updatedArticle.title,
-            description: updatedArticle.description,
-            content: updatedArticle.content,
-            category: updatedArticle.category,
-            source: updatedArticle.source,
-            published_at: updatedArticle.published_at,
-            image_url: updatedArticle.image_url,
-            url: updatedArticle.url,
-            views: updatedArticle.views,
-            is_trending: updatedArticle.is_trending
-          })
-          .eq('id', updatedArticle.id);
-        if (error) throw error;
-      }
-    } catch (e: any) {
-      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
-        supabaseAvailable = false;
-      }
-      console.warn('Could not update in Supabase, updating locally:', e?.message);
-    }
+    await trySupabaseWrite(async () => {
+      const { error } = await supabase
+        .from('articles')
+        .update({
+          title: updatedArticle.title,
+          description: updatedArticle.description,
+          content: updatedArticle.content,
+          category: updatedArticle.category,
+          source: updatedArticle.source,
+          published_at: updatedArticle.published_at,
+          image_url: updatedArticle.image_url,
+          views: updatedArticle.views,
+          is_trending: updatedArticle.is_trending
+        })
+        .eq('id', updatedArticle.id);
+      if (error) throw error;
+    });
     const articles = getLocalArticles();
     const index = articles.findIndex(a => a.id === updatedArticle.id);
     if (index !== -1) {
@@ -218,35 +225,22 @@ export class NewsService {
   }
 
   static async deleteArticle(id: string): Promise<void> {
-    try {
-      if (supabaseAvailable) {
-        const { error } = await supabase
-          .from('articles')
-          .delete()
-          .eq('id', id);
-        if (error) throw error;
-      }
-    } catch (e: any) {
-      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
-        supabaseAvailable = false;
-      }
-      console.warn('Could not delete from Supabase, deleting locally:', e?.message);
-    }
+    await trySupabaseWrite(async () => {
+      const { error } = await supabase
+        .from('articles')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    });
     const articles = getLocalArticles();
     setLocalArticles(articles.filter(a => a.id !== id));
   }
 
   static async incrementViews(id: string): Promise<void> {
-    try {
-      if (supabaseAvailable) {
-        const { error } = await supabase.rpc('increment_views', { article_id: id });
-        if (error) throw error;
-      }
-    } catch (e: any) {
-      if (e?.message?.includes('Failed to fetch') || e?.message?.includes('NetworkError')) {
-        supabaseAvailable = false;
-      }
-    }
+    await trySupabaseWrite(async () => {
+      const { error } = await supabase.rpc('increment_views', { article_id: id });
+      if (error) throw error;
+    });
     const articles = getLocalArticles();
     const article = articles.find(a => a.id === id);
     if (article) {
@@ -257,7 +251,9 @@ export class NewsService {
 
   static async fetchRSSFeed(feedUrl: string, category: string): Promise<NewsArticle[]> {
     const feedContent = this.generateRSSContent(feedUrl, category);
-    const articles = feedContent.map((item) => ({
+    const articles = feedContent
+      .filter((item) => !!item.imageUrl)
+      .map((item) => ({
       title: item.title,
       description: item.description,
       content: item.content,
